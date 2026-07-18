@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Sparkles, Filter, RefreshCw, TrendingUp, Users, MessageCircle, Heart } from 'lucide-react';
 import Navbar from '../components/Navbar';
@@ -6,6 +6,38 @@ import MatchCard from '../components/MatchCard';
 import ConnectionRing from '../components/ConnectionRing';
 import MoodIndicator from '../components/MoodIndicator';
 import { FadeUp, HoverScale } from '../lib/animate';
+
+function useCountUp(target: number, duration = 1200) {
+  const [count, setCount] = useState(0);
+  const ref = useRef<HTMLDivElement>(null);
+  const hasAnimated = useRef(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAnimated.current) {
+          hasAnimated.current = true;
+          const start = performance.now();
+          const animate = (now: number) => {
+            const elapsed = now - start;
+            const progress = Math.min(elapsed / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            setCount(Math.round(eased * target));
+            if (progress < 1) requestAnimationFrame(animate);
+          };
+          requestAnimationFrame(animate);
+        }
+      },
+      { threshold: 0.1 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [target, duration]);
+
+  return { count, ref };
+}
 
 const mockMatches = [
   {
@@ -83,23 +115,26 @@ export default function Dashboard() {
         <FadeUp delay={0.1}>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
             {[
-              { icon: Users, label: 'New Matches', value: '12', color: 'text-warm-gold' },
-              { icon: MessageCircle, label: 'Active Chats', value: '5', color: 'text-sage-green' },
-              { icon: Heart, label: 'Friends Made', value: '8', color: 'text-muted-red' },
-              { icon: TrendingUp, label: 'Profile Views', value: '34', color: 'text-muted-slate' },
-            ].map((stat, i) => (
-              <HoverScale key={stat.label} scale={1.02}>
-                <div className="glass-card rounded-2xl p-5 flex items-center gap-4">
-                  <div className={`w-10 h-10 rounded-xl bg-warm-beige/30 flex items-center justify-center ${stat.color}`}>
-                    <stat.icon size={18} />
+              { icon: Users, label: 'New Matches', value: 12, suffix: '', color: 'text-warm-gold', gradient: 'from-warm-gold/20 to-warm-gold/5' },
+              { icon: MessageCircle, label: 'Active Chats', value: 5, suffix: '', color: 'text-sage-green', gradient: 'from-sage-green/20 to-sage-green/5' },
+              { icon: Heart, label: 'Friends Made', value: 8, suffix: '', color: 'text-muted-red', gradient: 'from-muted-red/20 to-muted-red/5' },
+              { icon: TrendingUp, label: 'Profile Views', value: 34, suffix: '', color: 'text-muted-slate', gradient: 'from-muted-slate/20 to-muted-slate/5' },
+            ].map((stat) => {
+              const { count, ref } = useCountUp(stat.value);
+              return (
+                <HoverScale key={stat.label} scale={1.02}>
+                  <div ref={ref} className={`glass-card rounded-2xl p-5 flex items-center gap-4 bg-gradient-to-br ${stat.gradient} border border-warm-beige/20`}>
+                    <div className={`w-10 h-10 rounded-xl bg-white/60 flex items-center justify-center ${stat.color}`}>
+                      <stat.icon size={18} />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-deep-navy" style={{ fontFamily: 'var(--font-heading)' }}>{count}{stat.suffix}</p>
+                      <p className="text-xs text-muted-slate">{stat.label}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-2xl font-bold text-deep-navy" style={{ fontFamily: 'var(--font-heading)' }}>{stat.value}</p>
-                    <p className="text-xs text-muted-slate">{stat.label}</p>
-                  </div>
-                </div>
-              </HoverScale>
-            ))}
+                </HoverScale>
+              );
+            })}
           </div>
         </FadeUp>
 
@@ -129,9 +164,9 @@ export default function Dashboard() {
               </div>
             </FadeUp>
 
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
               {matches.map((match, i) => (
-                <FadeUp key={match.name} delay={0.2 + i * 0.1}>
+                <FadeUp key={match.name} delay={0.15 + i * 0.08}>
                   <MatchCard
                     {...match}
                     onLike={() => {}}
@@ -160,7 +195,7 @@ export default function Dashboard() {
           <div className="space-y-6">
             {/* Recent Activity */}
             <FadeUp delay={0.3}>
-              <div className="glass-card rounded-3xl p-6">
+              <div className="glass-card rounded-3xl p-6 shimmer-border">
                 <h3 className="text-lg font-semibold text-deep-navy mb-4" style={{ fontFamily: 'var(--font-heading)' }}>
                   Recent Activity
                 </h3>
@@ -183,7 +218,7 @@ export default function Dashboard() {
 
             {/* Quick Actions */}
             <FadeUp delay={0.4}>
-              <div className="glass-card rounded-3xl p-6">
+              <div className="glass-card rounded-3xl p-6 shimmer-border">
                 <h3 className="text-lg font-semibold text-deep-navy mb-4" style={{ fontFamily: 'var(--font-heading)' }}>
                   Quick Actions
                 </h3>
@@ -209,7 +244,7 @@ export default function Dashboard() {
 
             {/* Connection Health */}
             <FadeUp delay={0.5}>
-              <div className="glass-card rounded-3xl p-6 text-center">
+              <div className="glass-card rounded-3xl p-6 text-center shimmer-border">
                 <h3 className="text-lg font-semibold text-deep-navy mb-2" style={{ fontFamily: 'var(--font-heading)' }}>
                   Connection Health
                 </h3>

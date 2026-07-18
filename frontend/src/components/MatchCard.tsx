@@ -20,8 +20,8 @@ export default function MatchCard({
   name, age, location, compatibility, interests, bio, image, onLike, onPass, onChat,
 }: MatchCardProps) {
   return (
-    <div className="relative w-full max-w-sm mx-auto animate-fade-in-up">
-      <div className="rounded-3xl overflow-hidden bg-white shadow-xl border border-warm-beige/30">
+    <div className="relative w-full max-w-sm mx-auto animate-fade-in-up card-hover">
+      <div className="rounded-3xl overflow-hidden bg-white shadow-xl border border-warm-beige/30 shimmer-border">
         <div className="relative h-72 overflow-hidden">
           <img src={image} alt={name} className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-deep-navy/80 via-transparent to-transparent" />
@@ -38,7 +38,9 @@ export default function MatchCard({
                   <MapPin size={12} /> {location}
                 </p>
               </div>
-              <ConnectionRing score={compatibility} size={56} strokeWidth={4} />
+              <div className="glow rounded-full">
+                <ConnectionRing score={compatibility} size={56} strokeWidth={4} />
+              </div>
             </div>
           </div>
         </div>

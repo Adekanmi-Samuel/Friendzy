@@ -1,5 +1,6 @@
 import { Heart, Users, Shield, Sparkles, ArrowRight, Globe, MessageCircle, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import ConnectionRing from '../components/ConnectionRing';
@@ -57,6 +58,14 @@ const stats = [
 ];
 
 export default function Landing() {
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <div className="min-h-screen">
       <Navbar />
@@ -64,13 +73,34 @@ export default function Landing() {
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-deep-navy">
         <div className="absolute inset-0 texture-overlay opacity-30" />
-        <div className="absolute inset-0 bg-gradient-to-b from-deep-navy via-deep-navy/90 to-deep-navy" />
+        <div className="absolute inset-0 bg-gradient-to-br from-deep-navy via-[#2a3f4f] to-[#1e3340] animated-gradient" />
 
-        {/* Decorative elements */}
-        <div className="absolute top-20 left-10 w-72 h-72 bg-warm-gold/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-sage-green/10 rounded-full blur-3xl" />
+        {/* Animated gradient orbs */}
+        <div
+          className="absolute top-20 left-10 w-80 h-80 bg-warm-gold/15 rounded-full blur-3xl float"
+          style={{ transform: `translateY(${scrollY * 0.05}px)` }}
+        />
+        <div
+          className="absolute bottom-20 right-10 w-96 h-96 bg-sage-green/15 rounded-full blur-3xl float-delay-2"
+          style={{ transform: `translateY(${scrollY * -0.03}px)` }}
+        />
+        <div
+          className="absolute top-1/3 right-1/4 w-64 h-64 bg-warm-gold/8 rounded-full blur-3xl float-delay-1"
+          style={{ transform: `translateY(${scrollY * 0.04}px)` }}
+        />
 
-        <div className="relative z-10 max-w-5xl mx-auto px-6 text-center pt-24 pb-16">
+        {/* Floating decorative shapes */}
+        <div className="absolute top-32 left-[15%] w-3 h-3 rounded-full bg-warm-gold/30 float" />
+        <div className="absolute top-48 right-[20%] w-2 h-2 rounded-full bg-sage-light/40 float-delay-1" />
+        <div className="absolute bottom-40 left-[25%] w-4 h-4 rounded-full bg-white/10 float-delay-2" />
+        <div className="absolute top-60 left-[60%] w-2.5 h-2.5 rounded-full bg-warm-gold/20 float-delay-3" />
+        <div className="absolute bottom-60 right-[30%] w-3 h-3 rounded-full bg-sage-green/25 float" />
+        <div className="absolute top-[45%] left-[8%] w-2 h-2 rounded-full bg-white/15 float-delay-1" />
+
+        <div
+          className="relative z-10 max-w-5xl mx-auto px-6 text-center pt-24 pb-16"
+          style={{ transform: `translateY(${scrollY * 0.15}px)` }}
+        >
           <FadeUp>
             <div className="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 px-4 py-2 mb-8">
               <Heart size={14} className="text-warm-gold" fill="currentColor" />
@@ -89,7 +119,7 @@ export default function Landing() {
 
           <FadeUp delay={0.2}>
             <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-10 leading-relaxed">
-              You are not alone. Friendzy matches you with people who truly understand you — based on personality, values, and the things that matter most.
+              You are not <span className="gradient-text font-semibold">alone</span>. Friendzy matches you with people who truly understand you — based on personality, values, and the things that matter most.
             </p>
           </FadeUp>
 
@@ -116,9 +146,12 @@ export default function Landing() {
 
           <FadeUp delay={0.4}>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto">
-              {stats.map((stat) => (
+              {stats.map((stat, i) => (
                 <div key={stat.label} className="text-center">
-                  <div className="text-3xl md:text-4xl font-bold text-white mb-1" style={{ fontFamily: 'var(--font-heading)' }}>
+                  <div
+                    className="text-3xl md:text-4xl font-bold text-white mb-1 animate-count-up"
+                    style={{ fontFamily: 'var(--font-heading)', animationDelay: `${0.6 + i * 0.15}s`, opacity: 0 }}
+                  >
                     {stat.value}
                   </div>
                   <div className="text-sm text-white/40">{stat.label}</div>
@@ -131,7 +164,7 @@ export default function Landing() {
         {/* Scroll indicator */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-gentle-pulse">
           <div className="w-6 h-10 rounded-full border-2 border-white/30 flex justify-center pt-2">
-            <div className="w-1 h-2 rounded-full bg-white/50" />
+            <div className="w-1 h-2 rounded-full bg-white/50 animate-bounce" />
           </div>
         </div>
       </section>
@@ -157,7 +190,7 @@ export default function Landing() {
               { step: '03', title: 'Start Connecting', description: 'Chat, share experiences, and build meaningful friendships in a safe, supportive space.' },
             ].map((item, i) => (
               <FadeUp key={item.step} delay={i * 0.1}>
-                <div className="relative p-8 rounded-3xl bg-white border border-warm-beige/40 shadow-sm hover:shadow-lg transition-shadow">
+                <div className="relative p-8 rounded-3xl bg-white border border-warm-beige/40 shadow-sm card-hover">
                   <span className="text-6xl font-bold text-warm-beige/50 absolute top-4 right-6" style={{ fontFamily: 'var(--font-heading)' }}>
                     {item.step}
                   </span>
@@ -190,7 +223,7 @@ export default function Landing() {
             {features.map((feature, i) => (
               <FadeUp key={feature.title} delay={i * 0.1}>
                 <HoverScale scale={1.02}>
-                  <div className="glass-card rounded-3xl p-8 h-full">
+                  <div className="glass-card rounded-3xl p-8 h-full card-hover glow">
                     <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-warm-gold/20 to-sage-green/20 flex items-center justify-center mb-5">
                       <feature.icon size={22} className="text-deep-navy" />
                     </div>
@@ -223,7 +256,7 @@ export default function Landing() {
           <div className="grid md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, i) => (
               <FadeUp key={testimonial.name} delay={i * 0.15}>
-                <div className="glass-card-dark rounded-3xl p-7 h-full flex flex-col">
+                <div className="glass-card-dark rounded-3xl p-7 h-full flex flex-col card-hover">
                   <div className="flex items-center gap-1 mb-4">
                     {[...Array(5)].map((_, j) => (
                       <Star key={j} size={14} className="text-warm-gold fill-warm-gold" />
@@ -248,7 +281,7 @@ export default function Landing() {
       <section className="py-24 bg-warm-white">
         <div className="max-w-3xl mx-auto px-6 text-center">
           <FadeUp>
-            <div className="glass-card rounded-3xl p-12 md:p-16">
+            <div className="glass-card rounded-3xl p-12 md:p-16 card-hover glow">
               <Users size={48} className="text-warm-gold mx-auto mb-6" />
               <h2 className="text-4xl md:text-5xl font-bold text-deep-navy mb-4" style={{ fontFamily: 'var(--font-heading)' }}>
                 Ready to Find Your People?

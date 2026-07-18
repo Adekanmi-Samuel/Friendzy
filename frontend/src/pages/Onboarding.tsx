@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ArrowLeft, Heart, Check, Sparkles } from 'lucide-react';
 import { FadeUp, HoverScale } from '../lib/animate';
@@ -40,6 +40,9 @@ const personalityTraits = [
 
 export default function Onboarding() {
   const [currentStep, setCurrentStep] = useState(0);
+  const [slideDirection, setSlideDirection] = useState<'right' | 'left'>('right');
+  const [poppingItem, setPoppingItem] = useState<string | null>(null);
+  const [showConfetti, setShowConfetti] = useState(false);
   const [name, setName] = useState('');
   const [age, setAge] = useState('');
   const [bio, setBio] = useState('');
@@ -49,19 +52,45 @@ export default function Onboarding() {
   const [region, setRegion] = useState('US');
   const [lookingFor, setLookingFor] = useState<string[]>([]);
 
+  const goNext = useCallback(() => {
+    if (currentStep < steps.length - 1) {
+      setSlideDirection('right');
+      setCurrentStep(prev => prev + 1);
+      if (currentStep === steps.length - 2) {
+        setShowConfetti(true);
+        setTimeout(() => setShowConfetti(false), 3000);
+      }
+    }
+  }, [currentStep]);
+
+  const goBack = useCallback(() => {
+    if (currentStep > 0) {
+      setSlideDirection('left');
+      setCurrentStep(prev => prev - 1);
+    }
+  }, [currentStep]);
+
+  const triggerPop = (item: string) => {
+    setPoppingItem(item);
+    setTimeout(() => setPoppingItem(null), 300);
+  };
+
   const toggleInterest = (interest: string) => {
+    triggerPop(interest);
     setSelectedInterests(prev =>
       prev.includes(interest) ? prev.filter(i => i !== interest) : [...prev, interest]
     );
   };
 
   const toggleTrait = (trait: string) => {
+    triggerPop(trait);
     setSelectedTraits(prev =>
       prev.includes(trait) ? prev.filter(t => t !== trait) : [...prev, trait]
     );
   };
 
   const toggleLookingFor = (option: string) => {
+    triggerPop(option);
     setLookingFor(prev =>
       prev.includes(option) ? prev.filter(o => o !== option) : [...prev, option]
     );
@@ -92,22 +121,20 @@ export default function Onboarding() {
 
       <div className="max-w-3xl mx-auto px-6 pt-28 pb-12">
         {/* Step title */}
-        <FadeUp key={currentStep}>
-          <div className="mb-10">
-            <h1 className="text-3xl md:text-4xl font-bold text-deep-navy mb-2" style={{ fontFamily: 'var(--font-heading)' }}>
-              {steps[currentStep]}
-            </h1>
-            <p className="text-muted-slate">
-              {currentStep === 0 && "Let's start with the basics — who are you?"}
-              {currentStep === 1 && "What do you love? Pick at least 3 things that light you up."}
-              {currentStep === 2 && "How would your closest friend describe you?"}
-              {currentStep === 3 && "Almost there! What kind of connections are you looking for?"}
-            </p>
-          </div>
-        </FadeUp>
+        <div key={`title-${currentStep}`} className={`mb-10 ${slideDirection === 'right' ? 'slide-in-right' : 'slide-in-left'}`}>
+          <h1 className="text-3xl md:text-4xl font-bold text-deep-navy mb-2" style={{ fontFamily: 'var(--font-heading)' }}>
+            {steps[currentStep]}
+          </h1>
+          <p className="text-muted-slate">
+            {currentStep === 0 && "Let's start with the basics — who are you?"}
+            {currentStep === 1 && "What do you love? Pick at least 3 things that light you up."}
+            {currentStep === 2 && "How would your closest friend describe you?"}
+            {currentStep === 3 && "Almost there! What kind of connections are you looking for?"}
+          </p>
+        </div>
 
         {/* Step Content */}
-        <div className="min-h-[400px]">
+        <div className={`min-h-[400px] ${slideDirection === 'right' ? 'slide-in-right' : 'slide-in-left'}`} key={`content-${currentStep}`}>
           {currentStep === 0 && (
             <FadeUp delay={0.1}>
               <div className="space-y-6">
@@ -168,7 +195,7 @@ export default function Onboarding() {
                               selectedInterests.includes(interest)
                                 ? 'bg-sage-green text-white shadow-md'
                                 : 'bg-white border border-warm-beige/50 text-muted-slate hover:border-sage-green/50'
-                            }`}
+                            } ${poppingItem === interest ? 'scale-pop' : ''}`}
                           >
                             {selectedInterests.includes(interest) && <span className="mr-1">&#10003;</span>}
                             {interest}
@@ -193,7 +220,7 @@ export default function Onboarding() {
                         selectedTraits.includes(trait)
                           ? 'bg-deep-navy text-white shadow-md'
                           : 'bg-white border border-warm-beige/50 text-muted-slate hover:border-deep-navy/30'
-                      }`}
+                      } ${poppingItem === trait ? 'scale-pop' : ''}`}
                     >
                       {selectedTraits.includes(trait) && <span className="mr-1.5"><Check size={14} className="inline" /></span>}
                       {trait}
@@ -227,7 +254,7 @@ export default function Onboarding() {
                             lookingFor.includes(option.value)
                               ? 'bg-warm-gold/10 border-2 border-warm-gold/30 shadow-sm'
                               : 'bg-white border border-warm-beige/50 hover:border-warm-beige'
-                          }`}
+                          } ${poppingItem === option.value ? 'scale-pop' : ''}`}
                         >
                           <span className="text-2xl">{option.icon}</span>
                           <span className={`text-sm font-medium ${lookingFor.includes(option.value) ? 'text-deep-navy' : 'text-muted-slate'}`}>
@@ -242,8 +269,25 @@ export default function Onboarding() {
                   </div>
                 </div>
 
-                <div className="glass-card rounded-3xl p-6">
-                  <div className="flex items-start gap-3">
+                <div className="glass-card rounded-3xl p-6 relative overflow-hidden">
+                  {showConfetti && (
+                    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                      {[...Array(20)].map((_, i) => (
+                        <div
+                          key={i}
+                          className="absolute w-2 h-2 rounded-full"
+                          style={{
+                            left: `${Math.random() * 100}%`,
+                            top: `${Math.random() * 40}%`,
+                            background: ['#D4A373', '#6B8C7A', '#C85A4C', '#E8C9A0', '#8FAD9E'][i % 5],
+                            animation: `confetti-fall ${1.5 + Math.random() * 1.5}s ease-out ${Math.random() * 0.5}s forwards`,
+                            opacity: 0,
+                          }}
+                        />
+                      ))}
+                    </div>
+                  )}
+                  <div className="flex items-start gap-3 relative">
                     <Sparkles size={20} className="text-warm-gold mt-0.5 flex-shrink-0" />
                     <div>
                       <h4 className="font-semibold text-deep-navy mb-1">You are all set!</h4>
@@ -261,7 +305,7 @@ export default function Onboarding() {
         {/* Navigation */}
         <div className="flex items-center justify-between mt-12 pt-8 border-t border-warm-beige/30">
           <button
-            onClick={() => setCurrentStep(prev => Math.max(0, prev - 1))}
+            onClick={goBack}
             disabled={currentStep === 0}
             className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer ${
               currentStep === 0
@@ -275,7 +319,7 @@ export default function Onboarding() {
           {currentStep < steps.length - 1 ? (
             <HoverScale scale={1.03}>
               <button
-                onClick={() => setCurrentStep(prev => Math.min(steps.length - 1, prev + 1))}
+                onClick={goNext}
                 className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-deep-navy text-white text-sm font-semibold hover:bg-navy-light transition-colors cursor-pointer"
               >
                 Continue <ArrowRight size={16} />
