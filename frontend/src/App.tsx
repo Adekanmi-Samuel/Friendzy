@@ -1,8 +1,9 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ErrorBoundary from './components/ErrorBoundary';
 import CursorGlow from './components/CursorGlow';
 import ScrollProgress from './components/ScrollProgress';
+import { initSmoothScroll, destroySmoothScroll } from './lib/smooth-scroll';
 
 /* ─── Lazy-loaded pages ─── */
 const Landing = lazy(() => import('./pages/Landing'));
@@ -60,6 +61,11 @@ function NotFound() {
 }
 
 export default function App() {
+  useEffect(() => {
+    initSmoothScroll();
+    return () => destroySmoothScroll();
+  }, []);
+
   return (
     <ErrorBoundary>
       <CursorGlow />
