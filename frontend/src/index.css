@@ -1,0 +1,112 @@
+@import "tailwindcss";
+
+@theme {
+  --color-warm-white: #F8F6F2;
+  --color-warm-beige: #E8E2D6;
+  --color-deep-navy: #2C3E4E;
+  --color-muted-slate: #4A6A7A;
+  --color-warm-gold: #D4A373;
+  --color-sage-green: #6B8C7A;
+  --color-muted-red: #C85A4C;
+  --color-soft-cream: #FDF8F0;
+  --color-navy-light: #3D5468;
+  --color-gold-light: #E8C9A0;
+  --color-sage-light: #8FAD9E;
+  --font-heading: 'Playfair Display', Georgia, serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+}
+
+* {
+  font-family: var(--font-body);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-warm-white);
+  color: var(--color-deep-navy);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-warm-beige);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-muted-slate);
+  border-radius: 3px;
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes gentle-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out forwards;
+}
+
+.animate-gentle-pulse {
+  animation: gentle-pulse 2s ease-in-out infinite;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(212, 163, 115, 0.15);
+}
+
+.glass-card-dark {
+  background: rgba(44, 62, 78, 0.85);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(212, 163, 115, 0.2);
+}
+
+.texture-overlay {
+  position: relative;
+}
+.texture-overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23D4A373' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+.msg-sent {
+  background: linear-gradient(135deg, var(--color-deep-navy), var(--color-muted-slate));
+  color: white;
+  border-radius: 1.25rem 1.25rem 0.25rem 1.25rem;
+}
+
+.msg-received {
+  background: white;
+  color: var(--color-deep-navy);
+  border-radius: 1.25rem 1.25rem 1.25rem 0.25rem;
+  border: 1px solid var(--color-warm-beige);
+}
+
+.mood-great { background: linear-gradient(135deg, #6B8C7A, #8FAD9E); }
+.mood-good { background: linear-gradient(135deg, #D4A373, #E8C9A0); }
+.mood-okay { background: linear-gradient(135deg, #4A6A7A, #6B8C7A); }
+.mood-low { background: linear-gradient(135deg, #C85A4C, #D4736A); }
+
+[dir="rtl"] .msg-sent {
+  border-radius: 1.25rem 1.25rem 1.25rem 0.25rem;
+}
+[dir="rtl"] .msg-received {
+  border-radius: 1.25rem 1.25rem 0.25rem 1.25rem;
+}
