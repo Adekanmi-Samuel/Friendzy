@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'node:test';
-import assert from 'node:assert';
+import { describe, it } from 'node:test';
+import assert from 'node:assert/strict';
 
 describe('Friendzy API', () => {
   it('health check returns ok', () => {
@@ -9,24 +9,24 @@ describe('Friendzy API', () => {
       version: '1.0.0',
       uptime: process.uptime(),
     };
-    expect(healthResponse.status).toBe('ok');
-    expect(healthResponse.version).toBeDefined();
+    assert.equal(healthResponse.status, 'ok');
+    assert.ok(healthResponse.version);
   });
 
   it('validates registration input', () => {
     // Test validation logic
     const invalidEmail = 'not-an-email';
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    expect(emailRegex.test(invalidEmail)).toBe(false);
-    expect(emailRegex.test('user@example.com')).toBe(true);
+    assert.equal(emailRegex.test(invalidEmail), false);
+    assert.equal(emailRegex.test('user@example.com'), true);
   });
 
   it('validates password strength', () => {
     const weakPassword = 'abc';
     const strongPassword = 'StrongPass1';
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-    expect(passwordRegex.test(weakPassword)).toBe(false);
-    expect(passwordRegex.test(strongPassword)).toBe(true);
+    assert.equal(passwordRegex.test(weakPassword), false);
+    assert.equal(passwordRegex.test(strongPassword), true);
   });
 
   it('moderation detects harmful content', () => {
@@ -37,7 +37,7 @@ describe('Friendzy API', () => {
     const cleanHasToxic = toxicPatterns.some(w => cleanMessage.toLowerCase().includes(w));
     const toxicHasToxic = toxicPatterns.some(w => toxicMessage.toLowerCase().includes(w));
 
-    expect(cleanHasToxic).toBe(false);
-    expect(toxicHasToxic).toBe(true);
+    assert.equal(cleanHasToxic, false);
+    assert.equal(toxicHasToxic, true);
   });
 });

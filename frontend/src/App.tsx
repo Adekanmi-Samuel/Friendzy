@@ -1,6 +1,8 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ErrorBoundary from './components/ErrorBoundary';
+import CursorGlow from './components/CursorGlow';
+import ScrollProgress from './components/ScrollProgress';
 
 /* ─── Lazy-loaded pages ─── */
 const Landing = lazy(() => import('./pages/Landing'));
@@ -60,6 +62,8 @@ function NotFound() {
 export default function App() {
   return (
     <ErrorBoundary>
+      <CursorGlow />
+      <ScrollProgress />
       <BrowserRouter>
         <Suspense fallback={<PageLoader />}>
           <Routes>

@@ -1,10 +1,14 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Heart, Shield, Globe, MessageCircle, ArrowRight, Users, Star, Compass, Handshake } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import ConnectionArcs from '../components/ConnectionArcs';
-import { FadeUp, useInView } from '../lib/animate';
+import { FadeUp } from '../lib/animate';
+import ParallaxSection from '../components/ParallaxSection';
+import FloatingParticles from '../components/FloatingParticles';
+import RevealText from '../components/RevealText';
+import MagneticButton from '../components/MagneticButton';
 
 const howItWorks = [
   { icon: Compass, title: 'Discover', description: 'Answer a few questions about who you are and what you value in friendship. No awkward quizzes — just real talk.' },
@@ -24,33 +28,6 @@ const testimonials = [
   { name: 'Priya', location: 'Mumbai, India', text: 'As an introvert, making friends felt impossible. The safe space environment helped me open up at my own pace. Now I have friends I talk to every day.' },
   { name: 'Marcus', location: 'Toronto, Canada', text: 'The compatibility scores are surprisingly accurate. My top matches feel like people I have known for years. This actually works.' },
 ];
-
-function ParallaxSection({ children, className = '', speed = 0.3 }: { children: React.ReactNode; className?: string; speed?: number }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [offset, setOffset] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!ref.current) return;
-      const rect = ref.current.getBoundingClientRect();
-      const windowHeight = window.innerHeight;
-      const elementCenter = rect.top + rect.height / 2;
-      const viewportCenter = windowHeight / 2;
-      const distance = elementCenter - viewportCenter;
-      setOffset(distance * speed);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [speed]);
-
-  return (
-    <div ref={ref} className={className} style={{ transform: `translateY(${offset}px)` }}>
-      {children}
-    </div>
-  );
-}
 
 function ParallaxHero() {
   const [scrollY, setScrollY] = useState(0);
@@ -88,6 +65,9 @@ function ParallaxHero() {
         }}
       />
 
+      {/* Floating particles */}
+      <FloatingParticles count={25} color="rgba(196, 147, 63, 0.06)" />
+
       {/* Floating decorative elements */}
       <div className="absolute inset-0 pointer-events-none">
         <div
@@ -124,33 +104,39 @@ function ParallaxHero() {
           <ConnectionArcs score={92} size={220} animate={true} />
         </div>
 
-        <h1
-          className="text-5xl md:text-7xl lg:text-8xl font-bold text-white leading-[1.05] mb-6"
-          style={{ fontFamily: 'var(--font-display)', letterSpacing: '-0.02em' }}
-        >
-          Share a coffee<br />
-          with someone who<br />
-          <span className="text-amber">gets you.</span>
-        </h1>
+        <RevealText>
+          <h1
+            className="text-5xl md:text-7xl lg:text-8xl font-bold text-white leading-[1.05] mb-6"
+            style={{ fontFamily: 'var(--font-display)', letterSpacing: '-0.02em' }}
+          >
+            Share a coffee<br />
+            with someone who<br />
+            <span className="text-amber">gets you.</span>
+          </h1>
+        </RevealText>
 
         <p className="text-lg md:text-xl text-white/50 max-w-2xl mx-auto mb-10 leading-relaxed">
           You're not alone. Friendzy connects you with genuine people for friendship — not dating.
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-          <Link
-            to="/onboarding"
-            className="group px-8 py-4 rounded-xl bg-amber text-white font-semibold text-lg flex items-center gap-2 hover:bg-amber-light transition-all duration-300"
-          >
-            Find Your People
-            <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-          </Link>
-          <Link
-            to="/dashboard"
-            className="px-8 py-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 text-white/70 font-medium text-lg hover:bg-white/10 hover:text-white transition-all duration-300"
-          >
-            How It Works
-          </Link>
+          <MagneticButton strength={0.2}>
+            <Link
+              to="/onboarding"
+              className="group px-8 py-4 rounded-xl bg-amber text-white font-semibold text-lg flex items-center gap-2 hover:bg-amber-light transition-all duration-300"
+            >
+              Find Your People
+              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </MagneticButton>
+          <MagneticButton strength={0.2}>
+            <Link
+              to="/dashboard"
+              className="px-8 py-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 text-white/70 font-medium text-lg hover:bg-white/10 hover:text-white transition-all duration-300"
+            >
+              How It Works
+            </Link>
+          </MagneticButton>
         </div>
 
         <p className="text-sm text-white/30" style={{ fontFamily: 'var(--font-mono)', letterSpacing: '0.03em' }}>
@@ -183,8 +169,9 @@ export default function Landing() {
 
       {/* How It Works */}
       <section className="py-28 bg-white relative">
+        <FloatingParticles count={12} color="rgba(107, 140, 122, 0.06)" />
         <div className="max-w-7xl mx-auto px-6">
-          <FadeUp>
+          <RevealText>
             <div className="text-center mb-20">
               <p className="text-sm font-medium text-amber uppercase tracking-widest mb-4" style={{ fontFamily: 'var(--font-mono)' }}>
                 How it works
@@ -199,7 +186,7 @@ export default function Landing() {
                 Three steps. No swiping. No pressure.
               </p>
             </div>
-          </FadeUp>
+          </RevealText>
 
           <div className="grid md:grid-cols-3 gap-8">
             {howItWorks.map((item, i) => (
@@ -234,9 +221,10 @@ export default function Landing() {
           className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-amber/3 to-transparent pointer-events-none"
           style={{ transform: 'translateY(-20px)' }}
         />
+        <FloatingParticles count={15} color="rgba(196, 147, 63, 0.05)" />
 
         <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <FadeUp>
+          <RevealText>
             <div className="text-center mb-20">
               <p className="text-sm font-medium text-moss uppercase tracking-widest mb-4" style={{ fontFamily: 'var(--font-mono)' }}>
                 Why Friendzy
@@ -251,7 +239,7 @@ export default function Landing() {
                 Every feature designed to help you find friendships that last.
               </p>
             </div>
-          </FadeUp>
+          </RevealText>
 
           <div className="grid md:grid-cols-2 gap-6">
             {features.map((feature, i) => (
@@ -289,9 +277,10 @@ export default function Landing() {
             style={{ transform: 'translateY(20px)' }}
           />
         </div>
+        <FloatingParticles count={18} color="rgba(196, 147, 63, 0.04)" />
 
         <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <FadeUp>
+          <RevealText>
             <div className="text-center mb-20">
               <p className="text-sm font-medium text-amber uppercase tracking-widest mb-4" style={{ fontFamily: 'var(--font-mono)' }}>
                 Real stories
@@ -306,7 +295,7 @@ export default function Landing() {
                 Hear from people who found their people.
               </p>
             </div>
-          </FadeUp>
+          </RevealText>
 
           <div className="grid md:grid-cols-3 gap-6">
             {testimonials.map((testimonial, i) => (
@@ -342,7 +331,7 @@ export default function Landing() {
       <section className="py-28 bg-linen relative">
         <div className="max-w-3xl mx-auto px-6 text-center">
           <ParallaxSection speed={0.05}>
-            <FadeUp>
+            <RevealText>
               <div className="rounded-2xl p-12 md:p-16 bg-white border border-pebble">
                 <Users size={48} className="text-amber mx-auto mb-6" />
                 <h2
@@ -354,14 +343,16 @@ export default function Landing() {
                 <p className="text-lg text-slate mb-8 max-w-xl mx-auto">
                   Join thousands who have found meaningful friendships. It takes less than 3 minutes.
                 </p>
-                <Link
-                  to="/onboarding"
-                  className="inline-flex items-center gap-2 px-10 py-4 rounded-xl bg-ink text-white font-semibold text-lg hover:bg-ink-light transition-colors duration-300"
-                >
-                  Get Started Free <ArrowRight size={18} />
-                </Link>
+                <MagneticButton strength={0.15}>
+                  <Link
+                    to="/onboarding"
+                    className="inline-flex items-center gap-2 px-10 py-4 rounded-xl bg-ink text-white font-semibold text-lg hover:bg-ink-light transition-colors duration-300"
+                  >
+                    Get Started Free <ArrowRight size={18} />
+                  </Link>
+                </MagneticButton>
               </div>
-            </FadeUp>
+            </RevealText>
           </ParallaxSection>
         </div>
       </section>

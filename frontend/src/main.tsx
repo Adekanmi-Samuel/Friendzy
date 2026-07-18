@@ -1,11 +1,15 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { initTheme } from './lib/theme'
 import './index.css'
+import { initTheme } from './lib/theme'
+import { initSmoothScroll } from './lib/smooth-scroll'
 import App from './App.tsx'
 
-// Apply stored / system theme before first render to avoid flash
-initTheme()
+initTheme();
+
+if (typeof window !== 'undefined') {
+  initSmoothScroll();
+}
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
