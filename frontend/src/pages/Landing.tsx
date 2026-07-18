@@ -1,9 +1,10 @@
+import { useEffect, useRef, useState } from 'react';
 import { Heart, Shield, Globe, MessageCircle, ArrowRight, Users, Star, Compass, Handshake } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import ConnectionArcs from '../components/ConnectionArcs';
-import { FadeUp } from '../lib/animate';
+import { FadeUp, useInView } from '../lib/animate';
 
 const howItWorks = [
   { icon: Compass, title: 'Discover', description: 'Answer a few questions about who you are and what you value in friendship. No awkward quizzes — just real talk.' },
@@ -24,176 +25,344 @@ const testimonials = [
   { name: 'Marcus', location: 'Toronto, Canada', text: 'The compatibility scores are surprisingly accurate. My top matches feel like people I have known for years. This actually works.' },
 ];
 
+function ParallaxSection({ children, className = '', speed = 0.3 }: { children: React.ReactNode; className?: string; speed?: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [offset, setOffset] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!ref.current) return;
+      const rect = ref.current.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      const elementCenter = rect.top + rect.height / 2;
+      const viewportCenter = windowHeight / 2;
+      const distance = elementCenter - viewportCenter;
+      setOffset(distance * speed);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [speed]);
+
+  return (
+    <div ref={ref} className={className} style={{ transform: `translateY(${offset}px)` }}>
+      {children}
+    </div>
+  );
+}
+
+function ParallaxHero() {
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const opacity = Math.max(0, 1 - scrollY / 600);
+  const translateY = scrollY * 0.4;
+  const scale = 1 + scrollY * 0.0003;
+  const ringsY = scrollY * 0.2;
+
+  return (
+    <section className="relative min-h-screen flex items-center justify-center bg-ink overflow-hidden">
+      {/* Parallax background layers */}
+      <div
+        className="absolute inset-0"
+        style={{ transform: `translateY(${scrollY * 0.15}px)` }}
+      >
+        <div className="absolute top-20 left-1/4 w-96 h-96 rounded-full bg-amber/5 blur-3xl" />
+        <div className="absolute bottom-20 right-1/4 w-80 h-80 rounded-full bg-moss/5 blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-amber/3 blur-3xl" />
+      </div>
+
+      {/* Grid pattern overlay */}
+      <div
+        className="absolute inset-0 opacity-[0.03]"
+        style={{
+          backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
+          backgroundSize: '60px 60px',
+          transform: `translateY(${scrollY * 0.08}px)`,
+        }}
+      />
+
+      {/* Floating decorative elements */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div
+          className="absolute top-32 left-16 w-2 h-2 rounded-full bg-amber/30"
+          style={{ transform: `translateY(${scrollY * -0.15}px)` }}
+        />
+        <div
+          className="absolute top-48 right-24 w-1.5 h-1.5 rounded-full bg-moss/30"
+          style={{ transform: `translateY(${scrollY * -0.1}px)` }}
+        />
+        <div
+          className="absolute bottom-40 left-1/3 w-1 h-1 rounded-full bg-white/20"
+          style={{ transform: `translateY(${scrollY * -0.2}px)` }}
+        />
+        <div
+          className="absolute top-1/3 right-1/3 w-1.5 h-1.5 rounded-full bg-amber/20"
+          style={{ transform: `translateY(${scrollY * -0.12}px)` }}
+        />
+      </div>
+
+      {/* Content */}
+      <div
+        className="relative z-10 max-w-5xl mx-auto px-6 text-center pt-24 pb-16"
+        style={{
+          opacity,
+          transform: `translateY(${translateY}px) scale(${scale})`,
+        }}
+      >
+        {/* Connection Arcs - parallax at different rate */}
+        <div
+          className="flex justify-center mb-10"
+          style={{ transform: `translateY(${ringsY}px)` }}
+        >
+          <ConnectionArcs score={92} size={220} animate={true} />
+        </div>
+
+        <h1
+          className="text-5xl md:text-7xl lg:text-8xl font-bold text-white leading-[1.05] mb-6"
+          style={{ fontFamily: 'var(--font-display)', letterSpacing: '-0.02em' }}
+        >
+          Share a coffee<br />
+          with someone who<br />
+          <span className="text-amber">gets you.</span>
+        </h1>
+
+        <p className="text-lg md:text-xl text-white/50 max-w-2xl mx-auto mb-10 leading-relaxed">
+          You're not alone. Friendzy connects you with genuine people for friendship — not dating.
+        </p>
+
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+          <Link
+            to="/onboarding"
+            className="group px-8 py-4 rounded-xl bg-amber text-white font-semibold text-lg flex items-center gap-2 hover:bg-amber-light transition-all duration-300"
+          >
+            Find Your People
+            <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+          </Link>
+          <Link
+            to="/dashboard"
+            className="px-8 py-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 text-white/70 font-medium text-lg hover:bg-white/10 hover:text-white transition-all duration-300"
+          >
+            How It Works
+          </Link>
+        </div>
+
+        <p className="text-sm text-white/30" style={{ fontFamily: 'var(--font-mono)', letterSpacing: '0.03em' }}>
+          1,247 people having coffee with a new friend right now
+        </p>
+      </div>
+
+      {/* Scroll indicator */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
+        <div className="w-5 h-8 rounded-full border border-white/20 flex items-start justify-center p-1.5">
+          <div
+            className="w-1 h-2 rounded-full bg-white/40"
+            style={{
+              animation: 'gentle-pulse 2s ease-in-out infinite',
+              transform: `translateY(${Math.min(scrollY * 0.02, 10)}px)`,
+            }}
+          />
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function Landing() {
   return (
     <div className="min-h-screen">
       <Navbar />
 
-      {/* Hero */}
-      <section className="relative min-h-screen flex items-center justify-center bg-ink overflow-hidden">
-        <div className="relative z-10 max-w-5xl mx-auto px-6 text-center pt-24 pb-16">
-          <FadeUp>
-            <div className="flex justify-center mb-8">
-              <ConnectionArcs score={92} size={200} animate={true} />
-            </div>
-          </FadeUp>
-
-          <FadeUp delay={0.1}>
-            <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight mb-6" style={{ fontFamily: 'var(--font-display)' }}>
-              Share a coffee with someone who gets you.
-            </h1>
-          </FadeUp>
-
-          <FadeUp delay={0.2}>
-            <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-10 leading-relaxed">
-              You're not alone. Friendzy connects you with genuine people for friendship — not dating.
-            </p>
-          </FadeUp>
-
-          <FadeUp delay={0.3}>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-              <Link
-                to="/onboarding"
-                className="px-8 py-4 rounded-2xl bg-amber text-white font-semibold text-lg flex items-center gap-2 hover:bg-amber-light transition-colors"
-              >
-                Find Your People <ArrowRight size={18} />
-              </Link>
-              <Link
-                to="/dashboard"
-                className="px-8 py-4 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10 text-white font-medium text-lg hover:bg-white/20 transition-colors"
-              >
-                How It Works
-              </Link>
-            </div>
-          </FadeUp>
-
-          <FadeUp delay={0.4}>
-            <p className="text-sm text-white/40" style={{ fontFamily: 'var(--font-mono)' }}>
-              1,247 people having coffee with a new friend right now
-            </p>
-          </FadeUp>
-        </div>
-      </section>
+      <ParallaxHero />
 
       {/* How It Works */}
-      <section className="py-24 bg-white">
+      <section className="py-28 bg-white relative">
         <div className="max-w-7xl mx-auto px-6">
           <FadeUp>
-            <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold text-ink mb-4" style={{ fontFamily: 'var(--font-display)' }}>
-                How Friendzy Works
+            <div className="text-center mb-20">
+              <p className="text-sm font-medium text-amber uppercase tracking-widest mb-4" style={{ fontFamily: 'var(--font-mono)' }}>
+                How it works
+              </p>
+              <h2
+                className="text-4xl md:text-5xl lg:text-6xl font-bold text-ink mb-5"
+                style={{ fontFamily: 'var(--font-display)', letterSpacing: '-0.01em' }}
+              >
+                From stranger to friend,<br />naturally.
               </h2>
-              <p className="text-lg text-slate max-w-2xl mx-auto">
-                Three simple steps to find friendships that last
+              <p className="text-lg text-slate max-w-xl mx-auto">
+                Three steps. No swiping. No pressure.
               </p>
             </div>
           </FadeUp>
 
           <div className="grid md:grid-cols-3 gap-8">
             {howItWorks.map((item, i) => (
-              <FadeUp key={item.title} delay={i * 0.1}>
-                <div className="p-8 rounded-2xl bg-white border border-pebble text-center">
-                  <div className="w-12 h-12 rounded-2xl bg-amber/10 flex items-center justify-center mx-auto mb-5">
-                    <item.icon size={22} className="text-amber" />
+              <ParallaxSection key={item.title} speed={0.05 + i * 0.02}>
+                <FadeUp delay={i * 0.1}>
+                  <div className="p-8 rounded-2xl bg-white border border-pebble hover:border-amber/30 transition-colors duration-500">
+                    <div className="w-14 h-14 rounded-2xl bg-ink flex items-center justify-center mb-6">
+                      <item.icon size={24} className="text-amber" />
+                    </div>
+                    <p className="text-xs font-medium text-amber mb-2 uppercase tracking-wider" style={{ fontFamily: 'var(--font-mono)' }}>
+                      Step {i + 1}
+                    </p>
+                    <h3
+                      className="text-xl font-semibold text-ink mb-3"
+                      style={{ fontFamily: 'var(--font-display)' }}
+                    >
+                      {item.title}
+                    </h3>
+                    <p className="text-slate leading-relaxed">{item.description}</p>
                   </div>
-                  <h3 className="text-xl font-semibold text-ink mb-3" style={{ fontFamily: 'var(--font-display)' }}>
-                    {item.title}
-                  </h3>
-                  <p className="text-slate leading-relaxed">{item.description}</p>
-                </div>
-              </FadeUp>
+                </FadeUp>
+              </ParallaxSection>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Why Friendzy */}
-      <section className="py-24 bg-linen">
-        <div className="max-w-7xl mx-auto px-6">
+      {/* Why Friendzy - parallax background shift */}
+      <section className="py-28 bg-linen relative overflow-hidden">
+        {/* Subtle parallax accent */}
+        <div
+          className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-amber/3 to-transparent pointer-events-none"
+          style={{ transform: 'translateY(-20px)' }}
+        />
+
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
           <FadeUp>
-            <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold text-ink mb-4" style={{ fontFamily: 'var(--font-display)' }}>
-                Why People Love Friendzy
+            <div className="text-center mb-20">
+              <p className="text-sm font-medium text-moss uppercase tracking-widest mb-4" style={{ fontFamily: 'var(--font-mono)' }}>
+                Why Friendzy
+              </p>
+              <h2
+                className="text-4xl md:text-5xl lg:text-6xl font-bold text-ink mb-5"
+                style={{ fontFamily: 'var(--font-display)', letterSpacing: '-0.01em' }}
+              >
+                Built for real<br />connection.
               </h2>
-              <p className="text-lg text-slate max-w-2xl mx-auto">
-                More than an app — a community built on trust and genuine connection
+              <p className="text-lg text-slate max-w-xl mx-auto">
+                Every feature designed to help you find friendships that last.
               </p>
             </div>
           </FadeUp>
 
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-2 gap-6">
             {features.map((feature, i) => (
-              <FadeUp key={feature.title} delay={i * 0.1}>
-                <div className="rounded-2xl p-8 bg-white/60 backdrop-blur-sm border border-pebble h-full">
-                  <div className="w-12 h-12 rounded-2xl bg-moss/10 flex items-center justify-center mb-5">
-                    <feature.icon size={22} className="text-ink" />
+              <ParallaxSection key={feature.title} speed={0.03 + i * 0.01}>
+                <FadeUp delay={i * 0.08}>
+                  <div className="rounded-2xl p-8 bg-white/60 backdrop-blur-sm border border-pebble hover:border-moss/30 transition-colors duration-500 h-full">
+                    <div className="w-12 h-12 rounded-2xl bg-moss/10 flex items-center justify-center mb-5">
+                      <feature.icon size={22} className="text-moss" />
+                    </div>
+                    <h3
+                      className="text-xl font-semibold text-ink mb-3"
+                      style={{ fontFamily: 'var(--font-display)' }}
+                    >
+                      {feature.title}
+                    </h3>
+                    <p className="text-slate leading-relaxed">{feature.description}</p>
                   </div>
-                  <h3 className="text-xl font-semibold text-ink mb-3" style={{ fontFamily: 'var(--font-display)' }}>
-                    {feature.title}
-                  </h3>
-                  <p className="text-slate leading-relaxed">{feature.description}</p>
-                </div>
-              </FadeUp>
+                </FadeUp>
+              </ParallaxSection>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="py-24 bg-ink">
-        <div className="max-w-7xl mx-auto px-6">
+      {/* Testimonials - dark section with parallax */}
+      <section className="py-28 bg-ink relative overflow-hidden">
+        {/* Parallax decorative elements */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div
+            className="absolute top-20 left-10 w-40 h-40 rounded-full border border-amber/5"
+            style={{ transform: 'translateY(-30px)' }}
+          />
+          <div
+            className="absolute bottom-20 right-10 w-60 h-60 rounded-full border border-moss/5"
+            style={{ transform: 'translateY(20px)' }}
+          />
+        </div>
+
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
           <FadeUp>
-            <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold text-white mb-4" style={{ fontFamily: 'var(--font-display)' }}>
-                Real Friendships, Real Stories
+            <div className="text-center mb-20">
+              <p className="text-sm font-medium text-amber uppercase tracking-widest mb-4" style={{ fontFamily: 'var(--font-mono)' }}>
+                Real stories
+              </p>
+              <h2
+                className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-5"
+                style={{ fontFamily: 'var(--font-display)', letterSpacing: '-0.01em' }}
+              >
+                Friendships that<br /><span className="text-amber">matter.</span>
               </h2>
-              <p className="text-lg text-white/50 max-w-2xl mx-auto">
-                Hear from people who found their people on Friendzy
+              <p className="text-lg text-white/40 max-w-xl mx-auto">
+                Hear from people who found their people.
               </p>
             </div>
           </FadeUp>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-6">
             {testimonials.map((testimonial, i) => (
-              <FadeUp key={testimonial.name} delay={i * 0.15}>
-                <div className="rounded-2xl p-7 bg-ink/85 backdrop-blur-md border border-amber/10 h-full flex flex-col">
-                  <div className="flex items-center gap-1 mb-4">
-                    {[...Array(5)].map((_, j) => (
-                      <Star key={j} size={14} className="text-amber fill-amber" />
-                    ))}
+              <ParallaxSection key={testimonial.name} speed={0.04 + i * 0.02}>
+                <FadeUp delay={i * 0.1}>
+                  <div className="rounded-2xl p-7 bg-white/5 backdrop-blur-sm border border-white/5 hover:border-amber/10 transition-colors duration-500 h-full flex flex-col">
+                    <div className="flex items-center gap-0.5 mb-5">
+                      {[...Array(5)].map((_, j) => (
+                        <Star key={j} size={14} className="text-amber fill-amber" />
+                      ))}
+                    </div>
+                    <p className="text-white/60 leading-relaxed mb-6 flex-1 text-[15px]">
+                      "{testimonial.text}"
+                    </p>
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-full bg-amber/10 flex items-center justify-center text-amber text-sm font-semibold" style={{ fontFamily: 'var(--font-display)' }}>
+                        {testimonial.name[0]}
+                      </div>
+                      <div>
+                        <p className="text-white font-medium text-sm">{testimonial.name}</p>
+                        <p className="text-white/30 text-xs" style={{ fontFamily: 'var(--font-mono)' }}>{testimonial.location}</p>
+                      </div>
+                    </div>
                   </div>
-                  <p className="text-white/70 leading-relaxed mb-6 flex-1">"{testimonial.text}"</p>
-                  <div>
-                    <p className="text-white font-semibold">{testimonial.name}</p>
-                    <p className="text-white/40 text-sm">{testimonial.location}</p>
-                  </div>
-                </div>
-              </FadeUp>
+                </FadeUp>
+              </ParallaxSection>
             ))}
           </div>
         </div>
       </section>
 
       {/* CTA */}
-      <section className="py-24 bg-linen">
+      <section className="py-28 bg-linen relative">
         <div className="max-w-3xl mx-auto px-6 text-center">
-          <FadeUp>
-            <div className="rounded-2xl p-12 md:p-16 bg-white border border-pebble">
-              <Users size={48} className="text-amber mx-auto mb-6" />
-              <h2 className="text-4xl md:text-5xl font-bold text-ink mb-4" style={{ fontFamily: 'var(--font-display)' }}>
-                Ready to Find Your People?
-              </h2>
-              <p className="text-lg text-slate mb-8 max-w-xl mx-auto">
-                Join thousands of people who have found meaningful friendships. It takes less than 3 minutes to get started.
-              </p>
-              <Link
-                to="/onboarding"
-                className="inline-flex items-center gap-2 px-10 py-4 rounded-2xl bg-ink text-white font-semibold text-lg hover:bg-ink-light transition-colors"
-              >
-                Get Started Free <ArrowRight size={18} />
-              </Link>
-            </div>
-          </FadeUp>
+          <ParallaxSection speed={0.05}>
+            <FadeUp>
+              <div className="rounded-2xl p-12 md:p-16 bg-white border border-pebble">
+                <Users size={48} className="text-amber mx-auto mb-6" />
+                <h2
+                  className="text-4xl md:text-5xl font-bold text-ink mb-4"
+                  style={{ fontFamily: 'var(--font-display)', letterSpacing: '-0.01em' }}
+                >
+                  Ready to find your<br />people?
+                </h2>
+                <p className="text-lg text-slate mb-8 max-w-xl mx-auto">
+                  Join thousands who have found meaningful friendships. It takes less than 3 minutes.
+                </p>
+                <Link
+                  to="/onboarding"
+                  className="inline-flex items-center gap-2 px-10 py-4 rounded-xl bg-ink text-white font-semibold text-lg hover:bg-ink-light transition-colors duration-300"
+                >
+                  Get Started Free <ArrowRight size={18} />
+                </Link>
+              </div>
+            </FadeUp>
+          </ParallaxSection>
         </div>
       </section>
 
