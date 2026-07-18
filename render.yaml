@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: friendzy-api
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node src/server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: FRONTEND_URL
+        value: https://friendzy-three.vercel.app
