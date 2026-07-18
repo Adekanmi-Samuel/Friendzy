@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd \"C:\\New folder\\Friendzy\\frontend\" && npm run build)",
+      "Bash(cd \"C:\\New folder\\Friendzy\\frontend\" && npm run dev)",
+      "Bash(cd \"C:\\New folder\\Friendzy\\frontend\" && npm run test:run)",
+      "Bash(cd \"C:\\New folder\\Friendzy\\backend\" && node src/server.js)",
+      "Bash(cd \"C:\\New folder\\Friendzy\" && git add -A)",
+      "Bash(cd \"C:\\New folder\\Friendzy\" && git status)",
+      "Bash(cd \"C:\\New folder\\Friendzy\" && git push origin main)",
+      "Bash(cd \"C:\\New folder\\Friendzy\\frontend\" && npm install*)",
+      "Bash(cd \"C:\\New folder\\Friendzy\\backend\" && npm install*)",
+      "Bash(cd \"C:\\New folder\\Friendzy\\frontend\" && vercel*)",
+      "Bash(gh *)",
+      "Bash(curl *)",
+      "Bash(ls *)",
+      "Bash(mkdir *)",
+      "Bash(find *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(wc *)",
+      "Bash(du *)",
+      "Bash(grep *)",
+      "Bash(echo *)",
+      "Bash(kill *)",
+      "Bash(timeout *)"
+    ]
+  }
+}
