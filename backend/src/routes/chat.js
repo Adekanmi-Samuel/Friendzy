@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import { v4 as uuidv4 } from 'uuid';
+import { asyncHandler } from '../middleware/errorHandler.js';
+import { validateMessage, validateReport } from '../middleware/validate.js';
 
 const router = Router();
 
@@ -41,49 +43,6 @@ const messagesByConv = {
   ],
 };
 
-// Get conversations list
-router.get('/conversations', (req, res) => {
-  res.json({ conversations });
-});
-
-// Get messages for a conversation
-router.get('/conversations/:convId/messages', (req, res) => {
-  const messages = messagesByConv[req.params.convId] || [];
-  res.json({ messages });
-});
-
-// Send a message
-router.post('/conversations/:convId/messages', (req, res) => {
-  const { text } = req.body;
-  if (!text) return res.status(400).json({ error: 'Message text required' });
-
-  const newMessage = {
-    id: uuidv4(),
-    sender: 'me',
-    text,
-    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-  };
-
-  // Auto-moderate (mock)
-  const moderationResult = moderateMessage(text);
-
-  res.json({ message: newMessage, moderation: moderationResult });
-});
-
-// Create new conversation
-router.post('/conversations', (req, res) => {
-  const { participantId } = req.body;
-  const newConv = {
-    id: uuidv4(),
-    participants: ['me', participantId],
-    lastMessage: '',
-    lastMessageTime: new Date().toISOString(),
-    unread: 0,
-  };
-  conversations.unshift(newConv);
-  res.json({ conversation: newConv });
-});
-
 // Simple content moderation
 function moderateMessage(text) {
   const flaggedWords = ['spam', 'scam', 'hate'];
@@ -97,29 +56,81 @@ function moderateMessage(text) {
   };
 }
 
+// Get conversations list
+router.get('/conversations', asyncHandler(async (req, res) => {
+  res.json({ conversations });
+}));
+
+// Get messages for a conversation
+router.get('/conversations/:convId/messages', asyncHandler(async (req, res) => {
+  const messages = messagesByConv[req.params.convId] || [];
+  res.json({ messages });
+}));
+
+// Send a message
+router.post('/conversations/:convId/messages', validateMessage, asyncHandler(async (req, res) => {
+  const { text } = req.body;
+
+  const newMessage = {
+    id: uuidv4(),
+    sender: 'me',
+    text,
+    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+  };
+
+  // Auto-moderate
+  const moderationResult = moderateMessage(text);
+
+  res.json({ message: newMessage, moderation: moderationResult });
+}));
+
+// Create new conversation
+router.post('/conversations', asyncHandler(async (req, res) => {
+  const { participantId } = req.body;
+
+  if (!participantId) {
+    return res.status(400).json({ error: 'Participant ID required' });
+  }
+
+  const newConv = {
+    id: uuidv4(),
+    participants: ['me', participantId],
+    lastMessage: '',
+    lastMessageTime: new Date().toISOString(),
+    unread: 0,
+  };
+  conversations.unshift(newConv);
+  res.json({ conversation: newConv });
+}));
+
 // Safety exit
-router.post('/safety-exit', (req, res) => {
+router.post('/safety-exit', asyncHandler(async (req, res) => {
   const { conversationId, reason } = req.body;
-  console.log(`Safety exit triggered for conv ${conversationId}: ${reason || 'No reason given'}`);
+  console.log(`[${new Date().toISOString()}] Safety exit triggered for conv ${conversationId}: ${reason || 'No reason given'}`);
   res.json({ success: true, message: 'Safety exit logged. You have been removed from this conversation.' });
-});
+}));
 
 // Block user
-router.post('/block', (req, res) => {
+router.post('/block', asyncHandler(async (req, res) => {
   const { userId, blockedUserId } = req.body;
-  console.log(`User ${userId} blocked user ${blockedUserId}`);
+
+  if (!userId || !blockedUserId) {
+    return res.status(400).json({ error: 'Both userId and blockedUserId required' });
+  }
+
+  console.log(`[${new Date().toISOString()}] User ${userId} blocked user ${blockedUserId}`);
   res.json({ success: true, message: 'User blocked' });
-});
+}));
 
 // Report user
-router.post('/report', (req, res) => {
+router.post('/report', validateReport, asyncHandler(async (req, res) => {
   const { userId, reportedUserId, reason, description } = req.body;
-  console.log(`Report filed: ${userId} reported ${reportedUserId} for: ${reason}`);
+  console.log(`[${new Date().toISOString()}] Report filed: ${userId} reported ${reportedUserId} for: ${reason}`);
   res.json({
     success: true,
     message: 'Report submitted. Our team will review it within 24 hours.',
     reportId: uuidv4(),
   });
-});
+}));
 
 export default router;

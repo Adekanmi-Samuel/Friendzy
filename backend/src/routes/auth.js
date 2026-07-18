@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import { v4 as uuidv4 } from 'uuid';
+import { asyncHandler } from '../middleware/errorHandler.js';
+import { validateRegistration, validateLogin, validateQuiz, validateProfileUpdate } from '../middleware/validate.js';
 
 const router = Router();
 
@@ -7,12 +9,10 @@ const router = Router();
 const users = new Map();
 
 // Register
-router.post('/register', (req, res) => {
+router.post('/register', validateRegistration, asyncHandler(async (req, res) => {
   const { name, email, password, location, bio } = req.body;
 
-  if (!name || !email || !password) {
-    return res.status(400).json({ error: 'Name, email, and password are required' });
-  }
+  console.log(`[${new Date().toISOString()}] Registration attempt: ${email}`);
 
   if (users.has(email)) {
     return res.status(409).json({ error: 'Email already registered' });
@@ -35,18 +35,17 @@ router.post('/register', (req, res) => {
   };
 
   users.set(email, user);
+  console.log(`[${new Date().toISOString()}] User registered: ${user.id}`);
 
   const { password: _, ...safeUser } = user;
   res.status(201).json({ user: safeUser, token: `token_${user.id}` });
-});
+}));
 
 // Login
-router.post('/login', (req, res) => {
+router.post('/login', validateLogin, asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  if (!email || !password) {
-    return res.status(400).json({ error: 'Email and password are required' });
-  }
+  console.log(`[${new Date().toISOString()}] Login attempt: ${email}`);
 
   const user = users.get(email);
   if (!user) {
@@ -54,14 +53,15 @@ router.post('/login', (req, res) => {
   }
 
   const { password: _, ...safeUser } = user;
+  console.log(`[${new Date().toISOString()}] Login successful: ${user.id}`);
   res.json({ user: safeUser, token: `token_${user.id}` });
-});
+}));
 
 // Update profile
-router.put('/profile', (req, res) => {
+router.put('/profile', validateProfileUpdate, asyncHandler(async (req, res) => {
   const { email, name, bio, location, interests } = req.body;
 
-  if (!email || !users.has(email)) {
+  if (!users.has(email)) {
     return res.status(404).json({ error: 'User not found' });
   }
 
@@ -73,10 +73,10 @@ router.put('/profile', (req, res) => {
 
   const { password: _, ...safeUser } = user;
   res.json({ user: safeUser });
-});
+}));
 
 // Save quiz results
-router.post('/quiz', (req, res) => {
+router.post('/quiz', validateQuiz, asyncHandler(async (req, res) => {
   const { email, answers, personalityProfile } = req.body;
 
   if (!email || !users.has(email)) {
@@ -92,7 +92,8 @@ router.post('/quiz', (req, res) => {
     neuroticism: Math.floor(Math.random() * 40 + 20),
   };
 
+  console.log(`[${new Date().toISOString()}] Quiz submitted for user: ${email}`);
   res.json({ success: true, personality: user.personality });
-});
+}));
 
 export default router;

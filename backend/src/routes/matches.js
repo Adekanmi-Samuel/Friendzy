@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { v4 as uuidv4 } from 'uuid';
+import { asyncHandler } from '../middleware/errorHandler.js';
 
 const router = Router();
 
@@ -22,7 +23,7 @@ function calculateCompatibility(userA, userB) {
 }
 
 // Get matches for a user
-router.get('/:userId', (req, res) => {
+router.get('/:userId', asyncHandler(async (req, res) => {
   const { region, limit = 10 } = req.query;
 
   // Return mock matches with calculated compatibility
@@ -33,17 +34,18 @@ router.get('/:userId', (req, res) => {
     { id: uuidv4(), name: 'Erik K.', age: 34, location: 'Berlin, Germany', compatibility: 71, interests: ['Reading', 'Cycling', 'Movies'] },
   ];
 
-  res.json({ matches: matches.slice(0, parseInt(limit)), total: matches.length });
-});
+  const parsedLimit = Math.min(Math.max(parseInt(limit) || 10, 1), 50);
+  res.json({ matches: matches.slice(0, parsedLimit), total: matches.length });
+}));
 
 // Like a match
-router.post('/:userId/like/:matchId', (req, res) => {
+router.post('/:userId/like/:matchId', asyncHandler(async (req, res) => {
   res.json({ success: true, message: 'Match liked', isMatch: Math.random() > 0.5 });
-});
+}));
 
 // Pass on a match
-router.post('/:userId/pass/:matchId', (req, res) => {
+router.post('/:userId/pass/:matchId', asyncHandler(async (req, res) => {
   res.json({ success: true, message: 'Match passed' });
-});
+}));
 
 export default router;

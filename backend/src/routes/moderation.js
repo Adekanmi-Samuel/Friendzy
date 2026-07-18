@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import { v4 as uuidv4 } from 'uuid';
+import { asyncHandler } from '../middleware/errorHandler.js';
+import { validateModerationCheck } from '../middleware/validate.js';
 
 const router = Router();
 
@@ -26,40 +28,46 @@ function moderateContent(text, type = 'message') {
 }
 
 // Moderate a message
-router.post('/check', (req, res) => {
+router.post('/check', validateModerationCheck, asyncHandler(async (req, res) => {
   const { text, type } = req.body;
-  if (!text) return res.status(400).json({ error: 'Text required' });
 
   const result = moderateContent(text, type);
 
   if (result.status === 'flagged') {
     flaggedContent.push(result);
+    console.log(`[${new Date().toISOString()}] Content flagged: ${result.flags.join(', ')}`);
   }
 
   res.json(result);
-});
+}));
 
 // Get flagged content (admin)
-router.get('/flagged', (req, res) => {
+router.get('/flagged', asyncHandler(async (req, res) => {
   res.json({ content: flaggedContent, total: flaggedContent.length });
-});
+}));
 
 // Human review endpoint
-router.post('/review/:id', (req, res) => {
+router.post('/review/:id', asyncHandler(async (req, res) => {
   const { action, reviewerNote } = req.body;
+
+  if (!action || !['approved', 'removed'].includes(action)) {
+    return res.status(400).json({ error: 'Action must be either "approved" or "removed"' });
+  }
+
   const item = flaggedContent.find(c => c.id === req.params.id);
 
   if (!item) return res.status(404).json({ error: 'Content not found' });
 
-  item.status = action; // 'approved' or 'removed'
+  item.status = action;
   item.reviewerNote = reviewerNote || '';
   item.reviewedAt = new Date().toISOString();
 
+  console.log(`[${new Date().toISOString()}] Content reviewed: ${item.id} -> ${action}`);
   res.json({ success: true, content: item });
-});
+}));
 
 // Profile moderation
-router.post('/profile-review', (req, res) => {
+router.post('/profile-review', asyncHandler(async (req, res) => {
   const { userId, profileData } = req.body;
 
   res.json({
@@ -68,17 +76,17 @@ router.post('/profile-review', (req, res) => {
     suggestion: null,
     reviewTime: new Date().toISOString(),
   });
-});
+}));
 
 // Safety check-in (post-meetup)
-router.post('/safety-checkin', (req, res) => {
+router.post('/safety-checkin', asyncHandler(async (req, res) => {
   const { userId, meetupId, status, notes } = req.body;
-  console.log(`Safety check-in: User ${userId}, Meetup ${meetupId}, Status: ${status}`);
+  console.log(`[${new Date().toISOString()}] Safety check-in: User ${userId}, Meetup ${meetupId}, Status: ${status}`);
   res.json({ success: true, message: 'Thank you for checking in. Stay safe!' });
-});
+}));
 
 // Get crisis hotlines by region
-router.get('/hotlines/:region', (req, res) => {
+router.get('/hotlines/:region', asyncHandler(async (req, res) => {
   const hotlines = {
     US: [{ name: 'Suicide & Crisis Lifeline', number: '988' }],
     UK: [{ name: 'Samaritans', number: '116 123' }],
@@ -90,6 +98,6 @@ router.get('/hotlines/:region', (req, res) => {
 
   const regionHotlines = hotlines[req.params.region] || hotlines.US;
   res.json({ hotlines: regionHotlines });
-});
+}));
 
 export default router;

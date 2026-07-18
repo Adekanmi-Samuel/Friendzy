@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { asyncHandler } from '../middleware/errorHandler.js';
 
 const router = Router();
 
@@ -35,7 +36,7 @@ const mockUsers = [
 ];
 
 // Get all matches
-router.get('/', (req, res) => {
+router.get('/', asyncHandler(async (req, res) => {
   const { region, interests } = req.query;
   let filtered = [...mockUsers];
 
@@ -44,26 +45,26 @@ router.get('/', (req, res) => {
   }
 
   res.json({ users: filtered, total: filtered.length });
-});
+}));
 
 // Get single user
-router.get('/:id', (req, res) => {
+router.get('/:id', asyncHandler(async (req, res) => {
   const user = mockUsers.find(u => u.id === req.params.id);
   if (!user) return res.status(404).json({ error: 'User not found' });
   res.json({ user });
-});
+}));
 
 // Update mood
-router.put('/mood', (req, res) => {
+router.put('/mood', asyncHandler(async (req, res) => {
   const { mood } = req.body;
   if (!['great', 'good', 'okay', 'low'].includes(mood)) {
-    return res.status(400).json({ error: 'Invalid mood' });
+    return res.status(400).json({ error: 'Invalid mood. Must be: great, good, okay, or low' });
   }
   res.json({ success: true, mood });
-});
+}));
 
 // Get user stats
-router.get('/:id/stats', (req, res) => {
+router.get('/:id/stats', asyncHandler(async (req, res) => {
   res.json({
     friends: 47,
     meetups: 12,
@@ -72,6 +73,6 @@ router.get('/:id/stats', (req, res) => {
     messagesThisWeek: 156,
     avgResponseTime: '12 min',
   });
-});
+}));
 
 export default router;

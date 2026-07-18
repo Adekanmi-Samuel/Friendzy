@@ -1,4 +1,6 @@
 import { Router } from 'express';
+import { asyncHandler } from '../middleware/errorHandler.js';
+import { validateCheckout } from '../middleware/validate.js';
 
 const router = Router();
 
@@ -18,25 +20,23 @@ const regionPricing = {
 };
 
 // Get plans
-router.get('/plans', (req, res) => {
+router.get('/plans', asyncHandler(async (req, res) => {
   res.json({ plans, regionPricing });
-});
+}));
 
 // Get pricing for region
-router.get('/pricing/:region', (req, res) => {
+router.get('/pricing/:region', asyncHandler(async (req, res) => {
   const pricing = regionPricing[req.params.region] || regionPricing.US;
   res.json({ region: req.params.region, ...pricing });
-});
+}));
 
 // Create checkout session (mock - integrate Stripe/Paystack in production)
-router.post('/checkout', (req, res) => {
+router.post('/checkout', validateCheckout, asyncHandler(async (req, res) => {
   const { plan, region, email } = req.body;
 
-  if (!plans[plan]) {
-    return res.status(400).json({ error: 'Invalid plan' });
-  }
-
   const pricing = regionPricing[region] || regionPricing.US;
+
+  console.log(`[${new Date().toISOString()}] Checkout initiated: ${email} -> ${plan} (${region})`);
 
   res.json({
     sessionId: `session_${Date.now()}`,
@@ -46,23 +46,23 @@ router.post('/checkout', (req, res) => {
     checkoutUrl: `https://checkout.friendzy.app/pay/${Date.now()}`,
     provider: region === 'NG' ? 'paystack' : 'stripe',
   });
-});
+}));
 
 // Webhook handler (mock)
-router.post('/webhook', (req, res) => {
+router.post('/webhook', asyncHandler(async (req, res) => {
   const { event, sessionId, status } = req.body;
-  console.log(`Payment webhook: ${event} for ${sessionId} - ${status}`);
+  console.log(`[${new Date().toISOString()}] Payment webhook: ${event} for ${sessionId} - ${status}`);
   res.json({ received: true });
-});
+}));
 
 // Get subscription status
-router.get('/subscription/:userId', (req, res) => {
+router.get('/subscription/:userId', asyncHandler(async (req, res) => {
   res.json({
     plan: 'premium',
     status: 'active',
     currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     cancelAtPeriodEnd: false,
   });
-});
+}));
 
 export default router;
