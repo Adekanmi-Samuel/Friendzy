@@ -4,47 +4,39 @@
       <circle cx="35" cy="50" r="32"/>
     </clipPath>
     <linearGradient id="overlap-glow" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#D4A373" stop-opacity="1"/>
-      <stop offset="100%" stop-color="#E8C49A" stop-opacity="1"/>
+      <stop offset="0%" stop-color="#C4933F"/>
+      <stop offset="100%" stop-color="#D4A85A"/>
     </linearGradient>
     <filter id="soft-shadow" x="-10%" y="-10%" width="130%" height="130%">
-      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#2C3E4E" flood-opacity="0.15"/>
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#243442" flood-opacity="0.15"/>
     </filter>
   </defs>
 
-  <!-- Main icon group with subtle shadow -->
   <g filter="url(#soft-shadow)">
-    <!-- Left circle - Person 1 (Deep Navy) -->
-    <circle cx="35" cy="50" r="32" fill="#2C3E4E"/>
+    <!-- Left circle - Person 1 (Ink) -->
+    <circle cx="35" cy="50" r="32" fill="#243442"/>
 
-    <!-- Right circle - Person 2 (Sage Green) -->
+    <!-- Right circle - Person 2 (Moss) -->
     <circle cx="65" cy="50" r="32" fill="#6B8C7A"/>
 
-    <!-- Overlap area - Connection (Warm Gold) -->
+    <!-- Overlap area - Connection (Amber) -->
     <circle cx="65" cy="50" r="32" fill="url(#overlap-glow)" clip-path="url(#left-clip)"/>
 
-    <!-- Heart in the center - symbolizing friendship -->
+    <!-- Heart in the center -->
     <path d="M50,68 C50,68 32,54 32,42 C32,32 42,30 50,42 C58,30 68,32 68,42 C68,54 50,68 50,68Z"
           fill="#FFFFFF" fill-opacity="0.92"/>
 
-    <!-- Subtle inner detail - small person silhouettes inside circles -->
-    <!-- Left person head -->
+    <!-- Person silhouettes -->
     <circle cx="30" cy="40" r="5" fill="#FFFFFF" fill-opacity="0.15"/>
-    <!-- Left person body curve -->
-    <path d="M22,58 C22,50 26,46 30,46 C34,46 38,50 38,58"
-          fill="#FFFFFF" fill-opacity="0.1"/>
-
-    <!-- Right person head -->
+    <path d="M22,58 C22,50 26,46 30,46 C34,46 38,50 38,58" fill="#FFFFFF" fill-opacity="0.1"/>
     <circle cx="70" cy="40" r="5" fill="#FFFFFF" fill-opacity="0.15"/>
-    <!-- Right person body curve -->
-    <path d="M62,58 C62,50 66,46 70,46 C74,46 78,50 78,58"
-          fill="#FFFFFF" fill-opacity="0.1"/>
+    <path d="M62,58 C62,50 66,46 70,46 C74,46 78,50 78,58" fill="#FFFFFF" fill-opacity="0.1"/>
   </g>
 
-  <!-- Connection sparkles above -->
-  <circle cx="50" cy="12" r="2.5" fill="#D4A373" opacity="0.7"/>
-  <circle cx="40" cy="8" r="1.5" fill="#D4A373" opacity="0.45"/>
-  <circle cx="60" cy="8" r="1.5" fill="#D4A373" opacity="0.45"/>
-  <circle cx="45" cy="5" r="1" fill="#D4A373" opacity="0.3"/>
-  <circle cx="55" cy="5" r="1" fill="#D4A373" opacity="0.3"/>
+  <!-- Connection sparkles -->
+  <circle cx="50" cy="12" r="2.5" fill="#C4933F" opacity="0.7"/>
+  <circle cx="40" cy="8" r="1.5" fill="#C4933F" opacity="0.45"/>
+  <circle cx="60" cy="8" r="1.5" fill="#C4933F" opacity="0.45"/>
+  <circle cx="45" cy="5" r="1" fill="#C4933F" opacity="0.3"/>
+  <circle cx="55" cy="5" r="1" fill="#C4933F" opacity="0.3"/>
 </svg>

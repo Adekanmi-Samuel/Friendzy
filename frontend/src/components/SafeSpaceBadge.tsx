@@ -10,7 +10,7 @@ export default function SafeSpaceBadge({ size = 'sm' }: { size?: 'sm' | 'md' | '
 
   return (
     <span
-      className={`inline-flex items-center rounded-full bg-sage-green/10 text-sage-green font-semibold ${sizes[size]}`}
+      className={`inline-flex items-center rounded-full bg-moss/10 text-moss font-semibold font-body ${sizes[size]}`}
     >
       <Shield size={iconSizes[size]} />
       Safe Space

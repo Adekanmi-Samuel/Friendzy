@@ -1,42 +1,48 @@
-import { AnimatedRing } from '../lib/animate';
+import ConnectionArcs from './ConnectionArcs';
 
 interface ConnectionRingProps {
   score: number;
   size?: number;
   strokeWidth?: number;
-  animate?: boolean;
   showLabel?: boolean;
+  animate?: boolean;
 }
 
+/**
+ * Thin wrapper that renders ConnectionArcs for normal sizes,
+ * and falls back to monospace score text for very small sizes (<60px).
+ */
 export default function ConnectionRing({
   score,
   size = 120,
-  strokeWidth = 8,
   showLabel = true,
 }: ConnectionRingProps) {
-  const getColor = (s: number) => {
-    if (s >= 80) return '#6B8C7A';
-    if (s >= 60) return '#D4A373';
-    if (s >= 40) return '#4A6A7A';
-    return '#C85A4C';
-  };
+  /* For very small sizes the arcs would be illegible -- just show the number */
+  if (size < 60) {
+    return (
+      <div
+        className="inline-flex items-center justify-center"
+        style={{ width: size, height: size }}
+      >
+        <span
+          className="font-bold leading-none"
+          style={{
+            fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)',
+            fontSize: `${Math.max(10, size * 0.24)}px`,
+            color: '#243442',
+          }}
+        >
+          {score}%
+        </span>
+      </div>
+    );
+  }
 
   return (
-    <div className="relative inline-flex items-center justify-center" style={{ width: size, height: size }}>
-      <AnimatedRing score={score} size={size} strokeWidth={strokeWidth} />
-      {showLabel && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span
-            className="text-2xl font-bold"
-            style={{ color: getColor(score), fontFamily: 'var(--font-heading)' }}
-          >
-            {score}%
-          </span>
-          <span className="text-[10px] uppercase tracking-wider text-muted-slate font-medium">
-            Match
-          </span>
-        </div>
-      )}
-    </div>
+    <ConnectionArcs
+      score={score}
+      size={size}
+      showLabel={showLabel}
+    />
   );
 }

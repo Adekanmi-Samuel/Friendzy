@@ -3,7 +3,7 @@ import { HelpCircle, ArrowRight, Sparkles, Heart, Shield, Zap, Crown, Users, Mes
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import PricingCard from '../components/PricingCard';
-import { FadeUp, HoverScale } from '../lib/animate';
+import { FadeUp } from '../lib/animate';
 
 const faqs = [
   {
@@ -47,30 +47,30 @@ const comparisons = [
 
 export default function Pricing() {
   return (
-    <div className="min-h-screen bg-warm-white">
+    <div className="min-h-screen bg-linen">
       <Navbar />
 
       {/* Hero */}
       <section className="pt-28 pb-16 px-6">
         <div className="max-w-4xl mx-auto text-center">
           <FadeUp>
-            <div className="inline-flex items-center gap-2 rounded-full bg-warm-gold/10 text-warm-gold px-4 py-2 mb-6">
+            <div className="inline-flex items-center gap-2 rounded-full bg-amber/10 text-amber px-4 py-2 mb-6">
               <Sparkles size={14} />
               <span className="text-sm font-semibold">Simple, transparent pricing</span>
             </div>
           </FadeUp>
 
           <FadeUp delay={0.1}>
-            <h1 className="text-4xl md:text-6xl font-bold text-deep-navy mb-4" style={{ fontFamily: 'var(--font-heading)' }}>
+            <h1 className="text-4xl md:text-6xl font-bold text-ink mb-4" style={{ fontFamily: 'var(--font-display)' }}>
               Invest in Your
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-warm-gold to-sage-green">
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber to-moss">
                 Friendships
               </span>
             </h1>
           </FadeUp>
 
           <FadeUp delay={0.2}>
-            <p className="text-lg text-muted-slate max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg text-slate max-w-2xl mx-auto leading-relaxed">
               Find genuine connections without breaking the bank. Start free and upgrade when you are ready for more.
             </p>
           </FadeUp>
@@ -132,52 +132,52 @@ export default function Pricing() {
       </section>
 
       {/* Comparison Table */}
-      <section className="py-20 bg-soft-cream texture-overlay">
+      <section className="py-20 bg-linen">
         <div className="max-w-5xl mx-auto px-6 relative z-10">
           <FadeUp>
             <div className="text-center mb-14">
-              <h2 className="text-3xl md:text-4xl font-bold text-deep-navy mb-3" style={{ fontFamily: 'var(--font-heading)' }}>
+              <h2 className="text-3xl md:text-4xl font-bold text-ink mb-3" style={{ fontFamily: 'var(--font-display)' }}>
                 Compare Plans
               </h2>
-              <p className="text-muted-slate">See exactly what you get with each plan</p>
+              <p className="text-slate">See exactly what you get with each plan</p>
             </div>
           </FadeUp>
 
           <FadeUp delay={0.1}>
-            <div className="bg-white rounded-3xl border border-warm-beige/30 shadow-lg overflow-hidden">
+            <div className="bg-white rounded-3xl border border-pebble/30 shadow-lg overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-warm-beige/30">
-                      <th className="text-left px-6 py-4 text-sm font-semibold text-muted-slate">Feature</th>
-                      <th className="text-center px-6 py-4 text-sm font-semibold text-muted-slate">Free</th>
-                      <th className="text-center px-6 py-4 text-sm font-semibold text-warm-gold bg-warm-gold/5">Premium</th>
-                      <th className="text-center px-6 py-4 text-sm font-semibold text-deep-navy">VIP</th>
+                    <tr className="border-b border-pebble/30">
+                      <th className="text-left px-6 py-4 text-sm font-semibold text-slate">Feature</th>
+                      <th className="text-center px-6 py-4 text-sm font-semibold text-slate">Free</th>
+                      <th className="text-center px-6 py-4 text-sm font-semibold text-amber bg-amber/5">Premium</th>
+                      <th className="text-center px-6 py-4 text-sm font-semibold text-ink">VIP</th>
                     </tr>
                   </thead>
                   <tbody>
                     {comparisons.map((row, i) => (
-                      <tr key={row.feature} className={`${i < comparisons.length - 1 ? 'border-b border-warm-beige/20' : ''} ${i % 2 === 0 ? 'bg-warm-white/50' : ''}`}>
-                        <td className="px-6 py-3.5 text-sm text-deep-navy font-medium">{row.feature}</td>
+                      <tr key={row.feature} className={`${i < comparisons.length - 1 ? 'border-b border-pebble/20' : ''} ${i % 2 === 0 ? 'bg-linen/50' : ''}`}>
+                        <td className="px-6 py-3.5 text-sm text-ink font-medium">{row.feature}</td>
                         <td className="text-center px-6 py-3.5">
                           {typeof row.free === 'boolean' ? (
-                            row.free ? <Check size={16} className="text-sage-green mx-auto" /> : <span className="text-muted-slate/30">--</span>
+                            row.free ? <Check size={16} className="text-moss mx-auto" /> : <span className="text-slate/30">--</span>
                           ) : (
-                            <span className="text-sm text-muted-slate">{row.free}</span>
+                            <span className="text-sm text-slate">{row.free}</span>
                           )}
                         </td>
-                        <td className="text-center px-6 py-3.5 bg-warm-gold/5">
+                        <td className="text-center px-6 py-3.5 bg-amber/5">
                           {typeof row.premium === 'boolean' ? (
-                            row.premium ? <Check size={16} className="text-warm-gold mx-auto" /> : <span className="text-muted-slate/30">--</span>
+                            row.premium ? <Check size={16} className="text-amber mx-auto" /> : <span className="text-slate/30">--</span>
                           ) : (
-                            <span className="text-sm text-warm-gold font-medium">{row.premium}</span>
+                            <span className="text-sm text-amber font-medium">{row.premium}</span>
                           )}
                         </td>
                         <td className="text-center px-6 py-3.5">
                           {typeof row.vip === 'boolean' ? (
-                            row.vip ? <Check size={16} className="text-deep-navy mx-auto" /> : <span className="text-muted-slate/30">--</span>
+                            row.vip ? <Check size={16} className="text-ink mx-auto" /> : <span className="text-slate/30">--</span>
                           ) : (
-                            <span className="text-sm text-deep-navy font-medium">{row.vip}</span>
+                            <span className="text-sm text-ink font-medium">{row.vip}</span>
                           )}
                         </td>
                       </tr>
@@ -202,10 +202,10 @@ export default function Pricing() {
                 { icon: Star, label: '4.9 App Rating' },
               ].map((badge, i) => (
                 <div key={badge.label} className="text-center">
-                  <div className="w-12 h-12 rounded-2xl bg-warm-beige/30 flex items-center justify-center mx-auto mb-3">
-                    <badge.icon size={20} className="text-deep-navy" />
+                  <div className="w-12 h-12 rounded-2xl bg-pebble/30 flex items-center justify-center mx-auto mb-3">
+                    <badge.icon size={20} className="text-ink" />
                   </div>
-                  <p className="text-sm font-medium text-muted-slate">{badge.label}</p>
+                  <p className="text-sm font-medium text-slate">{badge.label}</p>
                 </div>
               ))}
             </div>
@@ -214,26 +214,26 @@ export default function Pricing() {
       </section>
 
       {/* FAQ */}
-      <section className="py-20 bg-soft-cream texture-overlay">
+      <section className="py-20 bg-linen">
         <div className="max-w-3xl mx-auto px-6 relative z-10">
           <FadeUp>
             <div className="text-center mb-14">
-              <h2 className="text-3xl md:text-4xl font-bold text-deep-navy mb-3" style={{ fontFamily: 'var(--font-heading)' }}>
+              <h2 className="text-3xl md:text-4xl font-bold text-ink mb-3" style={{ fontFamily: 'var(--font-display)' }}>
                 Frequently Asked Questions
               </h2>
-              <p className="text-muted-slate">Everything you need to know about our plans</p>
+              <p className="text-slate">Everything you need to know about our plans</p>
             </div>
           </FadeUp>
 
           <div className="space-y-4">
             {faqs.map((faq, i) => (
               <FadeUp key={i} delay={i * 0.05}>
-                <div className="bg-white rounded-2xl border border-warm-beige/30 p-6">
+                <div className="bg-white rounded-2xl border border-pebble/30 p-6">
                   <div className="flex items-start gap-3">
-                    <HelpCircle size={18} className="text-warm-gold mt-0.5 flex-shrink-0" />
+                    <HelpCircle size={18} className="text-amber mt-0.5 flex-shrink-0" />
                     <div>
-                      <h3 className="font-semibold text-deep-navy mb-2">{faq.q}</h3>
-                      <p className="text-sm text-muted-slate leading-relaxed">{faq.a}</p>
+                      <h3 className="font-semibold text-ink mb-2">{faq.q}</h3>
+                      <p className="text-sm text-slate leading-relaxed">{faq.a}</p>
                     </div>
                   </div>
                 </div>
@@ -248,30 +248,26 @@ export default function Pricing() {
         <div className="max-w-3xl mx-auto px-6 text-center">
           <FadeUp>
             <div className="glass-card rounded-3xl p-10 md:p-14">
-              <Heart size={36} className="text-warm-gold mx-auto mb-5" />
-              <h2 className="text-3xl md:text-4xl font-bold text-deep-navy mb-3" style={{ fontFamily: 'var(--font-heading)' }}>
+              <Heart size={36} className="text-amber mx-auto mb-5" />
+              <h2 className="text-3xl md:text-4xl font-bold text-ink mb-3" style={{ fontFamily: 'var(--font-display)' }}>
                 Start Building Friendships Today
               </h2>
-              <p className="text-muted-slate mb-8 max-w-lg mx-auto">
+              <p className="text-slate mb-8 max-w-lg mx-auto">
                 Join millions of people who have found genuine connections. Start free, upgrade when you are ready.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <HoverScale scale={1.03}>
                   <Link
                     to="/onboarding"
-                    className="px-8 py-3.5 rounded-2xl bg-deep-navy text-white font-semibold flex items-center gap-2 hover:bg-navy-light transition-colors"
+                    className="px-8 py-3.5 rounded-2xl bg-ink text-white font-semibold flex items-center gap-2 hover:bg-ink-light transition-colors"
                   >
                     Get Started Free <ArrowRight size={16} />
                   </Link>
-                </HoverScale>
-                <HoverScale scale={1.03}>
                   <Link
                     to="/safety"
-                    className="px-8 py-3.5 rounded-2xl bg-white border border-warm-beige/50 text-deep-navy font-medium flex items-center gap-2 hover:bg-warm-beige/10 transition-colors"
+                    className="px-8 py-3.5 rounded-2xl bg-white border border-pebble/50 text-ink font-medium flex items-center gap-2 hover:bg-pebble/10 transition-colors"
                   >
                     <Shield size={16} /> Learn About Safety
                   </Link>
-                </HoverScale>
               </div>
             </div>
           </FadeUp>

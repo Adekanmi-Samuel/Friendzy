@@ -3,42 +3,35 @@
     <clipPath id="left-clip-full">
       <circle cx="38" cy="50" r="30"/>
     </clipPath>
-    <linearGradient id="bg-warm" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#2C3E4E" stop-opacity="0.06"/>
-      <stop offset="100%" stop-color="#D4A373" stop-opacity="0.06"/>
-    </linearGradient>
   </defs>
-
-  <!-- Subtle background pill for light contexts -->
-  <rect x="0" y="0" width="420" height="100" rx="20" fill="url(#bg-warm)" opacity="0"/>
 
   <!-- === ICON MARK === -->
   <g transform="translate(10, 0)">
-    <!-- Left circle - Person 1 (Deep Navy) -->
-    <circle cx="38" cy="50" r="30" fill="#2C3E4E"/>
+    <!-- Left circle - Person 1 (Ink) -->
+    <circle cx="38" cy="50" r="30" fill="#243442"/>
 
-    <!-- Right circle - Person 2 (Sage Green) -->
+    <!-- Right circle - Person 2 (Moss) -->
     <circle cx="62" cy="50" r="30" fill="#6B8C7A"/>
 
-    <!-- Overlap area - Connection (Warm Gold) -->
-    <circle cx="62" cy="50" r="30" fill="#D4A373" clip-path="url(#left-clip-full)"/>
+    <!-- Overlap area - Connection (Amber) -->
+    <circle cx="62" cy="50" r="30" fill="#C4933F" clip-path="url(#left-clip-full)"/>
 
     <!-- Heart in the center of the overlap -->
     <path d="M50,64 C50,64 36,54 36,44 C36,36 44,34 50,44 C56,34 64,36 64,44 C64,54 50,64 50,64Z"
           fill="#FFFFFF" fill-opacity="0.95"/>
 
-    <!-- Small sparkle / connection dots -->
-    <circle cx="50" cy="30" r="2" fill="#D4A373" opacity="0.6"/>
-    <circle cx="42" cy="26" r="1.2" fill="#D4A373" opacity="0.4"/>
-    <circle cx="58" cy="26" r="1.2" fill="#D4A373" opacity="0.4"/>
+    <!-- Connection sparkles -->
+    <circle cx="50" cy="30" r="2" fill="#C4933F" opacity="0.6"/>
+    <circle cx="42" cy="26" r="1.2" fill="#C4933F" opacity="0.4"/>
+    <circle cx="58" cy="26" r="1.2" fill="#C4933F" opacity="0.4"/>
   </g>
 
   <!-- === TEXT === -->
-  <text x="118" y="62" font-family="Georgia, 'Times New Roman', 'Palatino Linotype', 'Book Antiqua', Palatino, serif"
-        font-size="52" font-weight="400" letter-spacing="1" fill="#2C3E4E">
+  <text x="118" y="62" font-family="Georgia, 'Times New Roman', serif"
+        font-size="52" font-weight="400" letter-spacing="1" fill="#243442">
     Friendzy
   </text>
 
-  <!-- Subtle tagline accent line -->
-  <line x1="118" y1="74" x2="268" y2="74" stroke="#D4A373" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+  <!-- Subtle accent line -->
+  <line x1="118" y1="74" x2="268" y2="74" stroke="#C4933F" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
 </svg>

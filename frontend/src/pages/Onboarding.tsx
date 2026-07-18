@@ -1,34 +1,17 @@
 import { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ArrowLeft, Heart, Check, Sparkles } from 'lucide-react';
-import { FadeUp, HoverScale } from '../lib/animate';
+import { ArrowRight, ArrowLeft, Heart, Check } from 'lucide-react';
+import { FadeUp } from '../lib/animate';
 import MoodIndicator from '../components/MoodIndicator';
 import RegionToggle from '../components/RegionToggle';
 
-const steps = [
-  'About You',
-  'Interests',
-  'Personality',
-  'Preferences',
-];
+const steps = ['Welcome', 'Quiz', 'Profile', 'Complete'];
 
 const interestCategories = [
-  {
-    category: 'Creative',
-    interests: ['Writing', 'Music', 'Photography', 'Art', 'Design', 'Film'],
-  },
-  {
-    category: 'Active',
-    interests: ['Hiking', 'Yoga', 'Running', 'Dancing', 'Swimming', 'Cycling'],
-  },
-  {
-    category: 'Social',
-    interests: ['Cooking', 'Travel', 'Volunteering', 'Book Clubs', 'Gaming', 'Podcasts'],
-  },
-  {
-    category: 'Mindful',
-    interests: ['Meditation', 'Journaling', 'Philosophy', 'Nature', 'Astronomy', 'Learning'],
-  },
+  { category: 'Creative', interests: ['Writing', 'Music', 'Photography', 'Art', 'Design', 'Film'] },
+  { category: 'Active', interests: ['Hiking', 'Yoga', 'Running', 'Dancing', 'Swimming', 'Cycling'] },
+  { category: 'Social', interests: ['Cooking', 'Travel', 'Volunteering', 'Book Clubs', 'Gaming', 'Podcasts'] },
+  { category: 'Mindful', interests: ['Meditation', 'Journaling', 'Philosophy', 'Nature', 'Astronomy', 'Learning'] },
 ];
 
 const personalityTraits = [
@@ -41,8 +24,6 @@ const personalityTraits = [
 export default function Onboarding() {
   const [currentStep, setCurrentStep] = useState(0);
   const [slideDirection, setSlideDirection] = useState<'right' | 'left'>('right');
-  const [poppingItem, setPoppingItem] = useState<string | null>(null);
-  const [showConfetti, setShowConfetti] = useState(false);
   const [name, setName] = useState('');
   const [age, setAge] = useState('');
   const [bio, setBio] = useState('');
@@ -56,10 +37,6 @@ export default function Onboarding() {
     if (currentStep < steps.length - 1) {
       setSlideDirection('right');
       setCurrentStep(prev => prev + 1);
-      if (currentStep === steps.length - 2) {
-        setShowConfetti(true);
-        setTimeout(() => setShowConfetti(false), 3000);
-      }
     }
   }, [currentStep]);
 
@@ -70,27 +47,19 @@ export default function Onboarding() {
     }
   }, [currentStep]);
 
-  const triggerPop = (item: string) => {
-    setPoppingItem(item);
-    setTimeout(() => setPoppingItem(null), 300);
-  };
-
   const toggleInterest = (interest: string) => {
-    triggerPop(interest);
     setSelectedInterests(prev =>
       prev.includes(interest) ? prev.filter(i => i !== interest) : [...prev, interest]
     );
   };
 
   const toggleTrait = (trait: string) => {
-    triggerPop(trait);
     setSelectedTraits(prev =>
       prev.includes(trait) ? prev.filter(t => t !== trait) : [...prev, trait]
     );
   };
 
   const toggleLookingFor = (option: string) => {
-    triggerPop(option);
     setLookingFor(prev =>
       prev.includes(option) ? prev.filter(o => o !== option) : [...prev, option]
     );
@@ -99,21 +68,23 @@ export default function Onboarding() {
   const progress = ((currentStep + 1) / steps.length) * 100;
 
   return (
-    <div className="min-h-screen bg-warm-white">
+    <div className="min-h-screen bg-linen">
       {/* Header */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-warm-beige/30">
+      <div className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-xl border-b border-pebble/50">
         <div className="max-w-3xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-warm-gold to-sage-green flex items-center justify-center">
-              <Heart size={16} className="text-white" fill="white" />
+            <div className="w-8 h-8 rounded-full bg-ink flex items-center justify-center">
+              <Heart size={16} className="text-amber" fill="currentColor" />
             </div>
-            <span className="text-lg font-semibold text-deep-navy" style={{ fontFamily: 'var(--font-heading)' }}>Friendzy</span>
+            <span className="text-lg font-semibold text-ink" style={{ fontFamily: 'var(--font-display)' }}>Friendzy</span>
           </Link>
-          <span className="text-sm text-muted-slate">Step {currentStep + 1} of {steps.length}</span>
+          <span className="text-sm text-slate" style={{ fontFamily: 'var(--font-mono)' }}>
+            Step {currentStep + 1} of {steps.length}
+          </span>
         </div>
-        <div className="h-1 bg-warm-beige/30">
+        <div className="h-1 bg-pebble/40">
           <div
-            className="h-full bg-gradient-to-r from-warm-gold to-sage-green transition-all duration-500 ease-out"
+            className="h-full bg-moss transition-all duration-500 ease-out"
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -122,10 +93,10 @@ export default function Onboarding() {
       <div className="max-w-3xl mx-auto px-6 pt-28 pb-12">
         {/* Step title */}
         <div key={`title-${currentStep}`} className={`mb-10 ${slideDirection === 'right' ? 'slide-in-right' : 'slide-in-left'}`}>
-          <h1 className="text-3xl md:text-4xl font-bold text-deep-navy mb-2" style={{ fontFamily: 'var(--font-heading)' }}>
+          <h1 className="text-3xl md:text-4xl font-bold text-ink mb-2" style={{ fontFamily: 'var(--font-display)' }}>
             {steps[currentStep]}
           </h1>
-          <p className="text-muted-slate">
+          <p className="text-slate">
             {currentStep === 0 && "Let's start with the basics — who are you?"}
             {currentStep === 1 && "What do you love? Pick at least 3 things that light you up."}
             {currentStep === 2 && "How would your closest friend describe you?"}
@@ -135,72 +106,55 @@ export default function Onboarding() {
 
         {/* Step Content */}
         <div className={`min-h-[400px] ${slideDirection === 'right' ? 'slide-in-right' : 'slide-in-left'}`} key={`content-${currentStep}`}>
+          {/* Step 0: Welcome / About You */}
           {currentStep === 0 && (
             <FadeUp delay={0.1}>
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-deep-navy mb-2">Your Name</label>
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={e => setName(e.target.value)}
-                    placeholder="What should we call you?"
-                    className="w-full px-5 py-3.5 rounded-2xl bg-white border border-warm-beige/50 text-deep-navy placeholder:text-muted-slate/50 focus:outline-none focus:ring-2 focus:ring-warm-gold/30 focus:border-warm-gold transition-all"
-                  />
+                  <label className="block text-sm font-medium text-ink mb-2">Your Name</label>
+                  <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="What should we call you?"
+                    className="w-full px-5 py-3.5 rounded-2xl bg-white border border-pebble text-ink placeholder:text-slate/50 focus:outline-none focus:ring-2 focus:ring-amber/30 focus:border-amber transition-all" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-deep-navy mb-2">Age</label>
-                  <input
-                    type="number"
-                    value={age}
-                    onChange={e => setAge(e.target.value)}
-                    placeholder="Your age"
-                    className="w-full px-5 py-3.5 rounded-2xl bg-white border border-warm-beige/50 text-deep-navy placeholder:text-muted-slate/50 focus:outline-none focus:ring-2 focus:ring-warm-gold/30 focus:border-warm-gold transition-all"
-                  />
+                  <label className="block text-sm font-medium text-ink mb-2">Age</label>
+                  <input type="number" value={age} onChange={e => setAge(e.target.value)} placeholder="Your age"
+                    className="w-full px-5 py-3.5 rounded-2xl bg-white border border-pebble text-ink placeholder:text-slate/50 focus:outline-none focus:ring-2 focus:ring-amber/30 focus:border-amber transition-all" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-deep-navy mb-2">Short Bio</label>
-                  <textarea
-                    value={bio}
-                    onChange={e => setBio(e.target.value)}
-                    placeholder="Tell us a little about yourself in a sentence or two..."
-                    rows={3}
-                    className="w-full px-5 py-3.5 rounded-2xl bg-white border border-warm-beige/50 text-deep-navy placeholder:text-muted-slate/50 focus:outline-none focus:ring-2 focus:ring-warm-gold/30 focus:border-warm-gold transition-all resize-none"
-                  />
+                  <label className="block text-sm font-medium text-ink mb-2">Short Bio</label>
+                  <textarea value={bio} onChange={e => setBio(e.target.value)} placeholder="Tell us a little about yourself in a sentence or two..." rows={3}
+                    className="w-full px-5 py-3.5 rounded-2xl bg-white border border-pebble text-ink placeholder:text-slate/50 focus:outline-none focus:ring-2 focus:ring-amber/30 focus:border-amber transition-all resize-none" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-deep-navy mb-2">Current Mood</label>
+                  <label className="block text-sm font-medium text-ink mb-2">Current Mood</label>
                   <MoodIndicator selected={mood} onSelect={setMood} />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-deep-navy mb-2">Your Region</label>
+                  <label className="block text-sm font-medium text-ink mb-2">Your Region</label>
                   <RegionToggle selected={region} onSelect={setRegion} />
                 </div>
               </div>
             </FadeUp>
           )}
 
+          {/* Step 1: Quiz / Interests */}
           {currentStep === 1 && (
             <FadeUp delay={0.1}>
               <div className="space-y-8">
                 {interestCategories.map(cat => (
                   <div key={cat.category}>
-                    <h3 className="text-sm font-semibold text-muted-slate uppercase tracking-wider mb-3">{cat.category}</h3>
+                    <h3 className="text-sm font-semibold text-slate uppercase tracking-wider mb-3 font-body">{cat.category}</h3>
                     <div className="flex flex-wrap gap-2">
                       {cat.interests.map(interest => (
-                        <HoverScale key={interest} scale={1.05}>
-                          <button
-                            onClick={() => toggleInterest(interest)}
-                            className={`px-4 py-2 rounded-full text-sm font-medium transition-all cursor-pointer ${
-                              selectedInterests.includes(interest)
-                                ? 'bg-sage-green text-white shadow-md'
-                                : 'bg-white border border-warm-beige/50 text-muted-slate hover:border-sage-green/50'
-                            } ${poppingItem === interest ? 'scale-pop' : ''}`}
-                          >
-                            {selectedInterests.includes(interest) && <span className="mr-1">&#10003;</span>}
-                            {interest}
-                          </button>
-                        </HoverScale>
+                        <button key={interest} onClick={() => toggleInterest(interest)}
+                          className={`px-4 py-2 rounded-full text-sm font-medium transition-all cursor-pointer ${
+                            selectedInterests.includes(interest)
+                              ? 'bg-ink text-white'
+                              : 'bg-white border border-pebble text-slate hover:border-ink/30'
+                          }`}>
+                          {selectedInterests.includes(interest) && <span className="mr-1">&#10003;</span>}
+                          {interest}
+                        </button>
                       ))}
                     </div>
                   </div>
@@ -209,89 +163,66 @@ export default function Onboarding() {
             </FadeUp>
           )}
 
+          {/* Step 2: Profile / Personality */}
           {currentStep === 2 && (
             <FadeUp delay={0.1}>
               <div className="flex flex-wrap gap-3">
                 {personalityTraits.map(trait => (
-                  <HoverScale key={trait} scale={1.05}>
-                    <button
-                      onClick={() => toggleTrait(trait)}
-                      className={`px-5 py-3 rounded-2xl text-sm font-medium transition-all cursor-pointer ${
-                        selectedTraits.includes(trait)
-                          ? 'bg-deep-navy text-white shadow-md'
-                          : 'bg-white border border-warm-beige/50 text-muted-slate hover:border-deep-navy/30'
-                      } ${poppingItem === trait ? 'scale-pop' : ''}`}
-                    >
-                      {selectedTraits.includes(trait) && <span className="mr-1.5"><Check size={14} className="inline" /></span>}
-                      {trait}
-                    </button>
-                  </HoverScale>
+                  <button key={trait} onClick={() => toggleTrait(trait)}
+                    className={`px-5 py-3 rounded-2xl text-sm font-medium transition-all cursor-pointer ${
+                      selectedTraits.includes(trait)
+                        ? 'bg-ink text-white'
+                        : 'bg-white border border-pebble text-slate hover:border-ink/30'
+                    }`}>
+                    {selectedTraits.includes(trait) && <span className="mr-1.5"><Check size={14} className="inline" /></span>}
+                    {trait}
+                  </button>
                 ))}
               </div>
             </FadeUp>
           )}
 
+          {/* Step 3: Complete / Preferences */}
           {currentStep === 3 && (
             <FadeUp delay={0.1}>
               <div className="space-y-8">
                 <div>
-                  <h3 className="text-lg font-semibold text-deep-navy mb-4" style={{ fontFamily: 'var(--font-heading)' }}>
+                  <h3 className="text-lg font-semibold text-ink mb-4" style={{ fontFamily: 'var(--font-display)' }}>
                     I am looking for...
                   </h3>
                   <div className="grid sm:grid-cols-2 gap-3">
                     {[
-                      { value: 'casual', label: 'Casual friends to chat with', icon: '💬' },
-                      { value: 'deep', label: 'Deep, meaningful connections', icon: '🤝' },
-                      { value: 'activity', label: 'Activity partners', icon: '🏃' },
-                      { value: 'study', label: 'Study or accountability partners', icon: '📚' },
-                      { value: 'mentorship', label: 'Mentorship (give or receive)', icon: '🌱' },
-                      { value: 'local', label: 'Local friends nearby', icon: '📍' },
+                      { value: 'casual', label: 'Casual friends to chat with', icon: '\u{1F4AC}' },
+                      { value: 'deep', label: 'Deep, meaningful connections', icon: '\u{1F91D}' },
+                      { value: 'activity', label: 'Activity partners', icon: '\u{1F3C3}' },
+                      { value: 'study', label: 'Study or accountability partners', icon: '\u{1F4DA}' },
+                      { value: 'mentorship', label: 'Mentorship (give or receive)', icon: '\u{1F331}' },
+                      { value: 'local', label: 'Local friends nearby', icon: '\u{1F4CD}' },
                     ].map(option => (
-                      <HoverScale key={option.value} scale={1.02}>
-                        <button
-                          onClick={() => toggleLookingFor(option.value)}
-                          className={`w-full p-4 rounded-2xl text-left transition-all cursor-pointer flex items-center gap-3 ${
-                            lookingFor.includes(option.value)
-                              ? 'bg-warm-gold/10 border-2 border-warm-gold/30 shadow-sm'
-                              : 'bg-white border border-warm-beige/50 hover:border-warm-beige'
-                          } ${poppingItem === option.value ? 'scale-pop' : ''}`}
-                        >
-                          <span className="text-2xl">{option.icon}</span>
-                          <span className={`text-sm font-medium ${lookingFor.includes(option.value) ? 'text-deep-navy' : 'text-muted-slate'}`}>
-                            {option.label}
-                          </span>
-                          {lookingFor.includes(option.value) && (
-                            <Check size={16} className="ml-auto text-warm-gold" />
-                          )}
-                        </button>
-                      </HoverScale>
+                      <button key={option.value} onClick={() => toggleLookingFor(option.value)}
+                        className={`w-full p-4 rounded-2xl text-left transition-all cursor-pointer flex items-center gap-3 ${
+                          lookingFor.includes(option.value)
+                            ? 'bg-amber/10 border-2 border-amber/30'
+                            : 'bg-white border border-pebble hover:border-amber/30'
+                        }`}>
+                        <span className="text-2xl">{option.icon}</span>
+                        <span className={`text-sm font-medium ${lookingFor.includes(option.value) ? 'text-ink' : 'text-slate'}`}>
+                          {option.label}
+                        </span>
+                        {lookingFor.includes(option.value) && <Check size={16} className="ml-auto text-amber" />}
+                      </button>
                     ))}
                   </div>
                 </div>
 
-                <div className="glass-card rounded-3xl p-6 relative overflow-hidden">
-                  {showConfetti && (
-                    <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                      {[...Array(20)].map((_, i) => (
-                        <div
-                          key={i}
-                          className="absolute w-2 h-2 rounded-full"
-                          style={{
-                            left: `${Math.random() * 100}%`,
-                            top: `${Math.random() * 40}%`,
-                            background: ['#D4A373', '#6B8C7A', '#C85A4C', '#E8C9A0', '#8FAD9E'][i % 5],
-                            animation: `confetti-fall ${1.5 + Math.random() * 1.5}s ease-out ${Math.random() * 0.5}s forwards`,
-                            opacity: 0,
-                          }}
-                        />
-                      ))}
+                <div className="rounded-2xl p-6 bg-white border border-pebble">
+                  <div className="flex items-start gap-3">
+                    <div className="w-5 h-5 rounded-full bg-moss/20 flex items-center justify-center mt-0.5 flex-shrink-0">
+                      <Check size={12} className="text-moss" />
                     </div>
-                  )}
-                  <div className="flex items-start gap-3 relative">
-                    <Sparkles size={20} className="text-warm-gold mt-0.5 flex-shrink-0" />
                     <div>
-                      <h4 className="font-semibold text-deep-navy mb-1">You are all set!</h4>
-                      <p className="text-sm text-muted-slate leading-relaxed">
+                      <h4 className="font-semibold text-ink mb-1">You're all set!</h4>
+                      <p className="text-sm text-slate leading-relaxed">
                         Based on your answers, we will find people who share your interests, personality, and values. You can always update your preferences later.
                       </p>
                     </div>
@@ -303,37 +234,24 @@ export default function Onboarding() {
         </div>
 
         {/* Navigation */}
-        <div className="flex items-center justify-between mt-12 pt-8 border-t border-warm-beige/30">
-          <button
-            onClick={goBack}
-            disabled={currentStep === 0}
+        <div className="flex items-center justify-between mt-12 pt-8 border-t border-pebble/50">
+          <button onClick={goBack} disabled={currentStep === 0}
             className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer ${
-              currentStep === 0
-                ? 'text-muted-slate/30 cursor-not-allowed'
-                : 'text-muted-slate hover:text-deep-navy hover:bg-warm-beige/20'
-            }`}
-          >
+              currentStep === 0 ? 'text-slate/30 cursor-not-allowed' : 'text-slate hover:text-ink hover:bg-pebble/20'
+            }`}>
             <ArrowLeft size={16} /> Back
           </button>
 
           {currentStep < steps.length - 1 ? (
-            <HoverScale scale={1.03}>
-              <button
-                onClick={goNext}
-                className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-deep-navy text-white text-sm font-semibold hover:bg-navy-light transition-colors cursor-pointer"
-              >
-                Continue <ArrowRight size={16} />
-              </button>
-            </HoverScale>
+            <button onClick={goNext}
+              className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-ink text-white text-sm font-semibold hover:bg-ink-light transition-colors cursor-pointer">
+              Continue <ArrowRight size={16} />
+            </button>
           ) : (
-            <HoverScale scale={1.03}>
-              <Link
-                to="/dashboard"
-                className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-warm-gold text-white text-sm font-semibold hover:bg-gold-light transition-colors"
-              >
-                Find My People <Sparkles size={16} />
-              </Link>
-            </HoverScale>
+            <Link to="/dashboard"
+              className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-amber text-white text-sm font-semibold hover:bg-amber-light transition-colors">
+              Find My People <ArrowRight size={16} />
+            </Link>
           )}
         </div>
       </div>
