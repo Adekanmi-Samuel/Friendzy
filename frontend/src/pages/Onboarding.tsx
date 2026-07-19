@@ -1,11 +1,13 @@
 import { useState, useCallback } from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowRight, ArrowLeft, Heart, Check } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { ArrowRight, ArrowLeft, Heart, Check, Loader2 } from 'lucide-react';
 import { FadeUp } from '../lib/animate';
+import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../components/Toast';
 import MoodIndicator from '../components/MoodIndicator';
 import RegionToggle from '../components/RegionToggle';
 
-const steps = ['Welcome', 'Quiz', 'Profile', 'Complete'];
+const steps = ['Create Account', 'Your Profile', 'Your Interests', 'Preferences'];
 
 const interestCategories = [
   { category: 'Creative', interests: ['Writing', 'Music', 'Photography', 'Art', 'Design', 'Film'] },
@@ -22,13 +24,25 @@ const personalityTraits = [
 ];
 
 export default function Onboarding() {
+  const navigate = useNavigate();
+  const { register, user } = useAuth();
+  const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(0);
   const [slideDirection, setSlideDirection] = useState<'right' | 'left'>('right');
+  const [loading, setLoading] = useState(false);
+
+  // Step 0: Account
   const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [age, setAge] = useState('');
+
+  // Step 1: Profile
   const [bio, setBio] = useState('');
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   const [selectedTraits, setSelectedTraits] = useState<string[]>([]);
+
+  // Step 2: Preferences
   const [mood, setMood] = useState<'great' | 'good' | 'okay' | 'low' | undefined>();
   const [region, setRegion] = useState('US');
   const [lookingFor, setLookingFor] = useState<string[]>([]);
@@ -97,33 +111,51 @@ export default function Onboarding() {
             {steps[currentStep]}
           </h1>
           <p className="text-slate">
-            {currentStep === 0 && "Let's start with the basics — who are you?"}
-            {currentStep === 1 && "What do you love? Pick at least 3 things that light you up."}
-            {currentStep === 2 && "How would your closest friend describe you?"}
-            {currentStep === 3 && "Almost there! What kind of connections are you looking for?"}
+            {currentStep === 0 && "Create your account to get started. We'll find the right friends for you."}
+            {currentStep === 1 && "Tell us about yourself so we can find people you will click with."}
+            {currentStep === 2 && "What do you love? Pick at least 3 things that light you up."}
+            {currentStep === 3 && "Almost there! Set your preferences for the best matches."}
           </p>
         </div>
 
         {/* Step Content */}
         <div className={`min-h-[400px] ${slideDirection === 'right' ? 'slide-in-right' : 'slide-in-left'}`} key={`content-${currentStep}`}>
-          {/* Step 0: Welcome / About You */}
+          {/* Step 0: Create Account */}
           {currentStep === 0 && (
             <FadeUp delay={0.1}>
-              <div className="space-y-6">
+              <div className="space-y-5">
                 <div>
                   <label className="block text-sm font-medium text-ink mb-2">Your Name</label>
                   <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="What should we call you?"
-                    className="w-full px-5 py-3.5 rounded-2xl bg-white border border-pebble text-ink placeholder:text-slate/50 focus:outline-none focus:ring-2 focus:ring-amber/30 focus:border-amber transition-all" />
+                    className="w-full px-5 py-3.5 rounded-2xl bg-white border border-pebble text-ink placeholder:text-slate/50 focus:outline-none focus:ring-2 focus:ring-amber/30 transition-all" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-ink mb-2">Email</label>
+                  <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com"
+                    className="w-full px-5 py-3.5 rounded-2xl bg-white border border-pebble text-ink placeholder:text-slate/50 focus:outline-none focus:ring-2 focus:ring-amber/30 transition-all" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-ink mb-2">Password</label>
+                  <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="At least 6 characters" minLength={6}
+                    className="w-full px-5 py-3.5 rounded-2xl bg-white border border-pebble text-ink placeholder:text-slate/50 focus:outline-none focus:ring-2 focus:ring-amber/30 transition-all" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-ink mb-2">Age</label>
                   <input type="number" value={age} onChange={e => setAge(e.target.value)} placeholder="Your age"
-                    className="w-full px-5 py-3.5 rounded-2xl bg-white border border-pebble text-ink placeholder:text-slate/50 focus:outline-none focus:ring-2 focus:ring-amber/30 focus:border-amber transition-all" />
+                    className="w-full px-5 py-3.5 rounded-2xl bg-white border border-pebble text-ink placeholder:text-slate/50 focus:outline-none focus:ring-2 focus:ring-amber/30 transition-all" />
                 </div>
+              </div>
+            </FadeUp>
+          )}
+
+          {/* Step 1: Profile */}
+          {currentStep === 1 && (
+            <FadeUp delay={0.1}>
+              <div className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium text-ink mb-2">Short Bio</label>
                   <textarea value={bio} onChange={e => setBio(e.target.value)} placeholder="Tell us a little about yourself in a sentence or two..." rows={3}
-                    className="w-full px-5 py-3.5 rounded-2xl bg-white border border-pebble text-ink placeholder:text-slate/50 focus:outline-none focus:ring-2 focus:ring-amber/30 focus:border-amber transition-all resize-none" />
+                    className="w-full px-5 py-3.5 rounded-2xl bg-white border border-pebble text-ink placeholder:text-slate/50 focus:outline-none focus:ring-2 focus:ring-amber/30 transition-all resize-none" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-ink mb-2">Current Mood</label>
@@ -137,20 +169,18 @@ export default function Onboarding() {
             </FadeUp>
           )}
 
-          {/* Step 1: Quiz / Interests */}
-          {currentStep === 1 && (
+          {/* Step 2: Interests */}
+          {currentStep === 2 && (
             <FadeUp delay={0.1}>
-              <div className="space-y-8">
+              <div className="space-y-6">
                 {interestCategories.map(cat => (
                   <div key={cat.category}>
-                    <h3 className="text-sm font-semibold text-slate uppercase tracking-wider mb-3 font-body">{cat.category}</h3>
+                    <h3 className="text-sm font-semibold text-slate uppercase tracking-wider mb-3">{cat.category}</h3>
                     <div className="flex flex-wrap gap-2">
                       {cat.interests.map(interest => (
                         <button key={interest} onClick={() => toggleInterest(interest)}
                           className={`px-4 py-2 rounded-full text-sm font-medium transition-all cursor-pointer ${
-                            selectedInterests.includes(interest)
-                              ? 'bg-amber text-white'
-                              : 'bg-white border border-pebble text-slate hover:border-amber/30'
+                            selectedInterests.includes(interest) ? 'bg-amber text-white' : 'bg-white border border-pebble text-slate hover:border-amber/30'
                           }`}>
                           {selectedInterests.includes(interest) && <span className="mr-1">&#10003;</span>}
                           {interest}
@@ -158,25 +188,6 @@ export default function Onboarding() {
                       ))}
                     </div>
                   </div>
-                ))}
-              </div>
-            </FadeUp>
-          )}
-
-          {/* Step 2: Profile / Personality */}
-          {currentStep === 2 && (
-            <FadeUp delay={0.1}>
-              <div className="flex flex-wrap gap-3">
-                {personalityTraits.map(trait => (
-                  <button key={trait} onClick={() => toggleTrait(trait)}
-                    className={`px-5 py-3 rounded-2xl text-sm font-medium transition-all cursor-pointer ${
-                      selectedTraits.includes(trait)
-                        ? 'bg-amber text-white'
-                        : 'bg-white border border-pebble text-slate hover:border-amber/30'
-                    }`}>
-                    {selectedTraits.includes(trait) && <span className="mr-1.5"><Check size={14} className="inline" /></span>}
-                    {trait}
-                  </button>
                 ))}
               </div>
             </FadeUp>
@@ -248,10 +259,28 @@ export default function Onboarding() {
               Continue <ArrowRight size={16} />
             </button>
           ) : (
-            <Link to="/dashboard"
-              className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-amber text-white text-sm font-semibold hover:bg-amber-light transition-colors">
+            <button
+              onClick={async () => {
+                if (loading) return;
+                setLoading(true);
+                try {
+                  if (!user) {
+                    await register({ name: name || 'Friend', email: email || `user${Date.now()}@friendzy.com`, password: password || 'password123' });
+                  }
+                  toast('Welcome to Friendzy! Finding your people...', 'success');
+                  navigate('/dashboard');
+                } catch (err: any) {
+                  toast(err.message || 'Something went wrong', 'error');
+                  navigate('/dashboard');
+                } finally {
+                  setLoading(false);
+                }
+              }}
+              disabled={loading}
+              className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-amber text-white text-sm font-semibold hover:bg-amber-light transition-colors cursor-pointer disabled:opacity-50">
+              {loading ? <Loader2 size={16} className="animate-spin" /> : null}
               Find My People <ArrowRight size={16} />
-            </Link>
+            </button>
           )}
         </div>
       </div>

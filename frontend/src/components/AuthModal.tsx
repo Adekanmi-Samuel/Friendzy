@@ -309,6 +309,12 @@ function AuthContent({
             <>Remember your password? <button onClick={() => switchView('login')} className="text-amber font-semibold hover:text-amber-light cursor-pointer">Sign in</button></>
           )}
         </p>
+
+        {view === 'login' && (
+          <p className="text-center text-xs text-slate/50 mt-3" style={{ fontFamily: 'var(--font-mono)' }}>
+            Demo: sofia&#64;example.com / password123
+          </p>
+        )}
       </div>
     </>
   );

@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from 'react';
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ErrorBoundary from './components/ErrorBoundary';
 import CursorGlow from './components/CursorGlow';
@@ -7,7 +7,6 @@ import { ToastProvider } from './components/Toast';
 import CookieConsent from './components/CookieConsent';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
-import { initSmoothScroll, destroySmoothScroll } from './lib/smooth-scroll';
 
 /* ─── Lazy-loaded pages ─── */
 const Landing = lazy(() => import('./pages/Landing'));
@@ -23,16 +22,11 @@ const Privacy = lazy(() => import('./pages/Privacy'));
 const Support = lazy(() => import('./pages/Support'));
 const Admin = lazy(() => import('./pages/Admin'));
 
-/* ─── Loading Spinner ─── */
+/* ─── Minimal Suspense Fallback ─── */
 function PageLoader() {
   return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--color-linen)' }}>
-      <div className="flex flex-col items-center gap-3">
-        <div className="w-8 h-8 border-2 border-pebble border-t-amber rounded-full animate-spin" />
-        <p className="text-xs text-slate tracking-wide" style={{ fontFamily: 'var(--font-mono)' }}>
-          Loading...
-        </p>
-      </div>
+    <div className="min-h-screen flex items-center justify-center bg-linen">
+      <div className="w-8 h-8 border-2 border-pebble border-t-amber rounded-full animate-spin" />
     </div>
   );
 }
@@ -69,11 +63,6 @@ function NotFound() {
 }
 
 export default function App() {
-  useEffect(() => {
-    initSmoothScroll();
-    return () => destroySmoothScroll();
-  }, []);
-
   return (
     <ErrorBoundary>
       <ToastProvider>

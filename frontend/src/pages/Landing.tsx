@@ -1,13 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Heart, Shield, Globe, MessageCircle, ArrowRight, Users, Star, Compass, Handshake } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../components/Toast';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import AuthModal from '../components/AuthModal';
 import ConnectionArcs from '../components/ConnectionArcs';
 import { FadeUp } from '../lib/animate';
 import ParallaxSection from '../components/ParallaxSection';
-import FloatingParticles from '../components/FloatingParticles';
 import RevealText from '../components/RevealText';
 import MagneticButton from '../components/MagneticButton';
 
@@ -31,26 +32,10 @@ const testimonials = [
 ];
 
 function ParallaxHero({ onOpenAuth }: { onOpenAuth: () => void }) {
-  const [scrollY, setScrollY] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const opacity = Math.max(0, 1 - scrollY / 600);
-  const translateY = scrollY * 0.4;
-  const scale = 1 + scrollY * 0.0003;
-  const ringsY = scrollY * 0.2;
-
   return (
     <section className="relative min-h-screen flex items-center justify-center bg-linen overflow-hidden">
-      {/* Parallax background layers */}
-      <div
-        className="absolute inset-0"
-        style={{ transform: `translateY(${scrollY * 0.15}px)` }}
-      >
+      {/* Static background layers */}
+      <div className="absolute inset-0">
         <div className="absolute top-20 left-1/4 w-96 h-96 rounded-full bg-amber/8 blur-3xl" />
         <div className="absolute bottom-20 right-1/4 w-80 h-80 rounded-full bg-moss/6 blur-3xl" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-amber/5 blur-3xl" />
@@ -62,46 +47,21 @@ function ParallaxHero({ onOpenAuth }: { onOpenAuth: () => void }) {
         style={{
           backgroundImage: `linear-gradient(var(--color-pebble) 1px, transparent 1px), linear-gradient(90deg, var(--color-pebble) 1px, transparent 1px)`,
           backgroundSize: '60px 60px',
-          transform: `translateY(${scrollY * 0.08}px)`,
         }}
       />
 
-      {/* Floating particles */}
-      <FloatingParticles count={25} color="rgba(196, 147, 63, 0.08)" />
-
       {/* Floating decorative elements */}
       <div className="absolute inset-0 pointer-events-none">
-        <div
-          className="absolute top-32 left-16 w-2 h-2 rounded-full bg-amber/30"
-          style={{ transform: `translateY(${scrollY * -0.15}px)` }}
-        />
-        <div
-          className="absolute top-48 right-24 w-1.5 h-1.5 rounded-full bg-moss/30"
-          style={{ transform: `translateY(${scrollY * -0.1}px)` }}
-        />
-        <div
-          className="absolute bottom-40 left-1/3 w-1 h-1 rounded-full bg-ink/10"
-          style={{ transform: `translateY(${scrollY * -0.2}px)` }}
-        />
-        <div
-          className="absolute top-1/3 right-1/3 w-1.5 h-1.5 rounded-full bg-amber/20"
-          style={{ transform: `translateY(${scrollY * -0.12}px)` }}
-        />
+        <div className="absolute top-32 left-16 w-2 h-2 rounded-full bg-amber/30" />
+        <div className="absolute top-48 right-24 w-1.5 h-1.5 rounded-full bg-moss/30" />
+        <div className="absolute bottom-40 left-1/3 w-1 h-1 rounded-full bg-ink/10" />
+        <div className="absolute top-1/3 right-1/3 w-1.5 h-1.5 rounded-full bg-amber/20" />
       </div>
 
       {/* Content */}
-      <div
-        className="relative z-10 max-w-5xl mx-auto px-6 text-center pt-24 pb-16"
-        style={{
-          opacity,
-          transform: `translateY(${translateY}px) scale(${scale})`,
-        }}
-      >
-        {/* Connection Arcs - parallax at different rate */}
-        <div
-          className="flex justify-center mb-10"
-          style={{ transform: `translateY(${ringsY}px)` }}
-        >
+      <div className="relative z-10 max-w-5xl mx-auto px-6 text-center pt-24 pb-16">
+        {/* Connection Arcs */}
+        <div className="flex justify-center mb-10">
           <ConnectionArcs score={92} size={220} animate={true} />
         </div>
 
@@ -150,10 +110,7 @@ function ParallaxHero({ onOpenAuth }: { onOpenAuth: () => void }) {
         <div className="w-5 h-8 rounded-full border border-ink/20 flex items-start justify-center p-1.5">
           <div
             className="w-1 h-2 rounded-full bg-ink/40"
-            style={{
-              animation: 'gentle-pulse 2s ease-in-out infinite',
-              transform: `translateY(${Math.min(scrollY * 0.02, 10)}px)`,
-            }}
+            style={{ animation: 'gentle-pulse 2s ease-in-out infinite' }}
           />
         </div>
       </div>
@@ -163,6 +120,20 @@ function ParallaxHero({ onOpenAuth }: { onOpenAuth: () => void }) {
 
 export default function Landing() {
   const [showAuth, setShowAuth] = useState(false);
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  // Demo login helper
+  const handleDemoLogin = async () => {
+    try {
+      await login('sofia@example.com', 'password123');
+      navigate('/dashboard');
+    } catch (err) {
+      // Backend might not be running
+      toast('Demo requires backend server on port 3001', 'info');
+    }
+  };
 
   return (
     <div className="min-h-screen">
@@ -172,7 +143,6 @@ export default function Landing() {
 
       {/* How It Works */}
       <section className="py-28 bg-white relative">
-        <FloatingParticles count={12} color="rgba(107, 140, 122, 0.06)" />
         <div className="max-w-7xl mx-auto px-6">
           <RevealText>
             <div className="text-center mb-20">
@@ -224,7 +194,6 @@ export default function Landing() {
           className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-amber/3 to-transparent pointer-events-none"
           style={{ transform: 'translateY(-20px)' }}
         />
-        <FloatingParticles count={15} color="rgba(196, 147, 63, 0.05)" />
 
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <RevealText>
@@ -280,7 +249,6 @@ export default function Landing() {
             style={{ transform: 'translateY(20px)' }}
           />
         </div>
-        <FloatingParticles count={18} color="rgba(196, 147, 63, 0.06)" />
 
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <RevealText>
@@ -354,6 +322,12 @@ export default function Landing() {
                     Get Started Free <ArrowRight size={18} />
                   </Link>
                 </MagneticButton>
+                <button
+                  onClick={handleDemoLogin}
+                  className="mt-4 text-sm text-slate/60 hover:text-amber transition-colors underline underline-offset-2 cursor-pointer"
+                >
+                  Try Demo
+                </button>
               </div>
             </RevealText>
           </ParallaxSection>
