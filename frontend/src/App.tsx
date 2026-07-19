@@ -19,6 +19,7 @@ const Settings = lazy(() => import('./pages/Settings'));
 const Terms = lazy(() => import('./pages/Terms'));
 const Privacy = lazy(() => import('./pages/Privacy'));
 const Support = lazy(() => import('./pages/Support'));
+const Admin = lazy(() => import('./pages/Admin'));
 
 /* ─── Loading Spinner ─── */
 function PageLoader() {
@@ -90,6 +91,7 @@ export default function App() {
               <Route path="/terms" element={<Terms />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/support" element={<Support />} />
+              <Route path="/admin" element={<Admin />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
             <CookieConsent />
