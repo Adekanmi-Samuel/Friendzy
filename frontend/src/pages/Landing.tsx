@@ -44,29 +44,29 @@ function ParallaxHero() {
   const ringsY = scrollY * 0.2;
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center bg-ink overflow-hidden">
+    <section className="relative min-h-screen flex items-center justify-center bg-linen overflow-hidden">
       {/* Parallax background layers */}
       <div
         className="absolute inset-0"
         style={{ transform: `translateY(${scrollY * 0.15}px)` }}
       >
-        <div className="absolute top-20 left-1/4 w-96 h-96 rounded-full bg-amber/5 blur-3xl" />
-        <div className="absolute bottom-20 right-1/4 w-80 h-80 rounded-full bg-moss/5 blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-amber/3 blur-3xl" />
+        <div className="absolute top-20 left-1/4 w-96 h-96 rounded-full bg-amber/8 blur-3xl" />
+        <div className="absolute bottom-20 right-1/4 w-80 h-80 rounded-full bg-moss/6 blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-amber/5 blur-3xl" />
       </div>
 
       {/* Grid pattern overlay */}
       <div
-        className="absolute inset-0 opacity-[0.03]"
+        className="absolute inset-0 opacity-[0.04]"
         style={{
-          backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
+          backgroundImage: `linear-gradient(var(--color-pebble) 1px, transparent 1px), linear-gradient(90deg, var(--color-pebble) 1px, transparent 1px)`,
           backgroundSize: '60px 60px',
           transform: `translateY(${scrollY * 0.08}px)`,
         }}
       />
 
       {/* Floating particles */}
-      <FloatingParticles count={25} color="rgba(196, 147, 63, 0.06)" />
+      <FloatingParticles count={25} color="rgba(196, 147, 63, 0.08)" />
 
       {/* Floating decorative elements */}
       <div className="absolute inset-0 pointer-events-none">
@@ -79,7 +79,7 @@ function ParallaxHero() {
           style={{ transform: `translateY(${scrollY * -0.1}px)` }}
         />
         <div
-          className="absolute bottom-40 left-1/3 w-1 h-1 rounded-full bg-white/20"
+          className="absolute bottom-40 left-1/3 w-1 h-1 rounded-full bg-ink/10"
           style={{ transform: `translateY(${scrollY * -0.2}px)` }}
         />
         <div
@@ -106,7 +106,7 @@ function ParallaxHero() {
 
         <RevealText>
           <h1
-            className="text-5xl md:text-7xl lg:text-8xl font-bold text-white leading-[1.05] mb-6"
+            className="text-5xl md:text-7xl lg:text-8xl font-bold text-ink leading-[1.05] mb-6"
             style={{ fontFamily: 'var(--font-display)', letterSpacing: '-0.02em' }}
           >
             Share a coffee<br />
@@ -115,7 +115,7 @@ function ParallaxHero() {
           </h1>
         </RevealText>
 
-        <p className="text-lg md:text-xl text-white/50 max-w-2xl mx-auto mb-10 leading-relaxed">
+        <p className="text-lg md:text-xl text-slate max-w-2xl mx-auto mb-10 leading-relaxed">
           You're not alone. Friendzy connects you with genuine people for friendship — not dating.
         </p>
 
@@ -132,23 +132,23 @@ function ParallaxHero() {
           <MagneticButton strength={0.2}>
             <Link
               to="/dashboard"
-              className="px-8 py-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 text-white/70 font-medium text-lg hover:bg-white/10 hover:text-white transition-all duration-300"
+              className="px-8 py-4 rounded-xl bg-white backdrop-blur-sm border border-pebble text-slate font-medium text-lg hover:bg-pebble/20 hover:text-ink transition-all duration-300"
             >
               How It Works
             </Link>
           </MagneticButton>
         </div>
 
-        <p className="text-sm text-white/30" style={{ fontFamily: 'var(--font-mono)', letterSpacing: '0.03em' }}>
+        <p className="text-sm text-slate/60" style={{ fontFamily: 'var(--font-mono)', letterSpacing: '0.03em' }}>
           1,247 people having coffee with a new friend right now
         </p>
       </div>
 
       {/* Scroll indicator */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
-        <div className="w-5 h-8 rounded-full border border-white/20 flex items-start justify-center p-1.5">
+        <div className="w-5 h-8 rounded-full border border-ink/20 flex items-start justify-center p-1.5">
           <div
-            className="w-1 h-2 rounded-full bg-white/40"
+            className="w-1 h-2 rounded-full bg-ink/40"
             style={{
               animation: 'gentle-pulse 2s ease-in-out infinite',
               transform: `translateY(${Math.min(scrollY * 0.02, 10)}px)`,
@@ -193,7 +193,7 @@ export default function Landing() {
               <ParallaxSection key={item.title} speed={0.05 + i * 0.02}>
                 <FadeUp delay={i * 0.1}>
                   <div className="p-8 rounded-2xl bg-white border border-pebble hover:border-amber/30 transition-colors duration-500">
-                    <div className="w-14 h-14 rounded-2xl bg-ink flex items-center justify-center mb-6">
+                    <div className="w-14 h-14 rounded-2xl bg-amber/10 flex items-center justify-center mb-6">
                       <item.icon size={24} className="text-amber" />
                     </div>
                     <p className="text-xs font-medium text-amber mb-2 uppercase tracking-wider" style={{ fontFamily: 'var(--font-mono)' }}>
@@ -264,20 +264,20 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Testimonials - dark section with parallax */}
-      <section className="py-28 bg-ink relative overflow-hidden">
+      {/* Testimonials - soft accent section */}
+      <section className="py-28 bg-white relative overflow-hidden">
         {/* Parallax decorative elements */}
         <div className="absolute inset-0 pointer-events-none">
           <div
-            className="absolute top-20 left-10 w-40 h-40 rounded-full border border-amber/5"
+            className="absolute top-20 left-10 w-40 h-40 rounded-full border border-amber/10"
             style={{ transform: 'translateY(-30px)' }}
           />
           <div
-            className="absolute bottom-20 right-10 w-60 h-60 rounded-full border border-moss/5"
+            className="absolute bottom-20 right-10 w-60 h-60 rounded-full border border-moss/10"
             style={{ transform: 'translateY(20px)' }}
           />
         </div>
-        <FloatingParticles count={18} color="rgba(196, 147, 63, 0.04)" />
+        <FloatingParticles count={18} color="rgba(196, 147, 63, 0.06)" />
 
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <RevealText>
@@ -286,12 +286,12 @@ export default function Landing() {
                 Real stories
               </p>
               <h2
-                className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-5"
+                className="text-4xl md:text-5xl lg:text-6xl font-bold text-ink mb-5"
                 style={{ fontFamily: 'var(--font-display)', letterSpacing: '-0.01em' }}
               >
                 Friendships that<br /><span className="text-amber">matter.</span>
               </h2>
-              <p className="text-lg text-white/40 max-w-xl mx-auto">
+              <p className="text-lg text-slate max-w-xl mx-auto">
                 Hear from people who found their people.
               </p>
             </div>
@@ -301,13 +301,13 @@ export default function Landing() {
             {testimonials.map((testimonial, i) => (
               <ParallaxSection key={testimonial.name} speed={0.04 + i * 0.02}>
                 <FadeUp delay={i * 0.1}>
-                  <div className="rounded-2xl p-7 bg-white/5 backdrop-blur-sm border border-white/5 hover:border-amber/10 transition-colors duration-500 h-full flex flex-col">
+                  <div className="rounded-2xl p-7 bg-linen/60 backdrop-blur-sm border border-pebble hover:border-amber/30 transition-colors duration-500 h-full flex flex-col">
                     <div className="flex items-center gap-0.5 mb-5">
                       {[...Array(5)].map((_, j) => (
                         <Star key={j} size={14} className="text-amber fill-amber" />
                       ))}
                     </div>
-                    <p className="text-white/60 leading-relaxed mb-6 flex-1 text-[15px]">
+                    <p className="text-slate leading-relaxed mb-6 flex-1 text-[15px]">
                       "{testimonial.text}"
                     </p>
                     <div className="flex items-center gap-3">
@@ -315,8 +315,8 @@ export default function Landing() {
                         {testimonial.name[0]}
                       </div>
                       <div>
-                        <p className="text-white font-medium text-sm">{testimonial.name}</p>
-                        <p className="text-white/30 text-xs" style={{ fontFamily: 'var(--font-mono)' }}>{testimonial.location}</p>
+                        <p className="text-ink font-medium text-sm">{testimonial.name}</p>
+                        <p className="text-slate/60 text-xs" style={{ fontFamily: 'var(--font-mono)' }}>{testimonial.location}</p>
                       </div>
                     </div>
                   </div>
@@ -346,7 +346,7 @@ export default function Landing() {
                 <MagneticButton strength={0.15}>
                   <Link
                     to="/onboarding"
-                    className="inline-flex items-center gap-2 px-10 py-4 rounded-xl bg-ink text-white font-semibold text-lg hover:bg-ink-light transition-colors duration-300"
+                    className="inline-flex items-center gap-2 px-10 py-4 rounded-xl bg-amber text-white font-semibold text-lg hover:bg-amber-light transition-colors duration-300"
                   >
                     Get Started Free <ArrowRight size={18} />
                   </Link>

@@ -13,6 +13,8 @@ import matchesRoutes from './routes/matches.js';
 import chatRoutes from './routes/chat.js';
 import paymentsRoutes from './routes/payments.js';
 import moderationRoutes from './routes/moderation.js';
+import groupsRoutes from './routes/groups.js';
+import verificationRoutes from './routes/verification.js';
 
 dotenv.config();
 
@@ -60,6 +62,14 @@ app.use('/api/matches', matchesRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/payments', paymentsRoutes);
 app.use('/api/moderation', moderationRoutes);
+app.use('/api/groups', groupsRoutes);
+app.use('/api/verification', verificationRoutes);
+
+// Paystack webhook needs raw body for signature verification
+app.post('/api/payments/webhook', express.raw({ type: 'application/json' }), (req, res) => {
+  // Handle webhook
+  res.json({ received: true });
+});
 
 // 404 handler
 app.use(notFoundHandler);

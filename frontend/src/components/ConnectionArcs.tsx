@@ -173,7 +173,7 @@ export default function ConnectionArcs({
           <path
             d={pathA}
             fill="none"
-            stroke="#C4933F"
+            stroke="var(--color-amber, #C4933F)"
             strokeWidth={strokeW * 2.5}
             strokeLinecap="round"
             opacity={0.35}
@@ -181,7 +181,7 @@ export default function ConnectionArcs({
           <path
             d={pathB}
             fill="none"
-            stroke="#C4933F"
+            stroke="var(--color-amber, #C4933F)"
             strokeWidth={strokeW * 2.5}
             strokeLinecap="round"
             opacity={0.35}
@@ -192,7 +192,7 @@ export default function ConnectionArcs({
         <path
           d={pathA}
           fill="none"
-          stroke="#243442"
+          stroke="var(--color-ink, #243442)"
           strokeWidth={strokeW}
           strokeLinecap="round"
           style={{
@@ -208,7 +208,7 @@ export default function ConnectionArcs({
         <path
           d={pathB}
           fill="none"
-          stroke="#6B8C7A"
+          stroke="var(--color-moss, #6B8C7A)"
           strokeWidth={strokeW}
           strokeLinecap="round"
           style={{
@@ -228,11 +228,11 @@ export default function ConnectionArcs({
             ...breathingStyle,
           }}
         >
-          <circle cx={posA.x} cy={posA.y - headR - 1} r={headR} fill="#243442" opacity={0.85} />
+          <circle cx={posA.x} cy={posA.y - headR - 1} r={headR} fill="var(--color-ink, #243442)" opacity={0.85} />
           <path
             d={`M ${posA.x - shoulderW} ${posA.y + 1} Q ${posA.x} ${posA.y + shoulderH * 2.2} ${posA.x + shoulderW} ${posA.y + 1}`}
             fill="none"
-            stroke="#243442"
+            stroke="var(--color-ink, #243442)"
             strokeWidth={headR * 0.7}
             strokeLinecap="round"
             opacity={0.7}
@@ -247,11 +247,11 @@ export default function ConnectionArcs({
             ...breathingStyle,
           }}
         >
-          <circle cx={posB.x} cy={posB.y - headR - 1} r={headR} fill="#6B8C7A" opacity={0.85} />
+          <circle cx={posB.x} cy={posB.y - headR - 1} r={headR} fill="var(--color-moss, #6B8C7A)" opacity={0.85} />
           <path
             d={`M ${posB.x - shoulderW} ${posB.y + 1} Q ${posB.x} ${posB.y + shoulderH * 2.2} ${posB.x + shoulderW} ${posB.y + 1}`}
             fill="none"
-            stroke="#6B8C7A"
+            stroke="var(--color-moss, #6B8C7A)"
             strokeWidth={headR * 0.7}
             strokeLinecap="round"
             opacity={0.7}
@@ -273,7 +273,7 @@ export default function ConnectionArcs({
             style={{
               fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)',
               fontSize: `${Math.max(12, size * 0.18)}px`,
-              color: '#243442',
+              color: 'var(--color-ink, #243442)',
             }}
           >
             {score}%
@@ -284,7 +284,7 @@ export default function ConnectionArcs({
               style={{
                 fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)',
                 fontSize: `${Math.max(8, size * 0.08)}px`,
-                color: '#6B8C7A',
+                color: 'var(--color-moss, #6B8C7A)',
               }}
             >
               Match

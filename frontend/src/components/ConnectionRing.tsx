@@ -29,7 +29,7 @@ export default function ConnectionRing({
           style={{
             fontFamily: 'var(--font-mono, "JetBrains Mono", monospace)',
             fontSize: `${Math.max(10, size * 0.24)}px`,
-            color: '#243442',
+            color: 'var(--color-ink, #243442)',
           }}
         >
           {score}%

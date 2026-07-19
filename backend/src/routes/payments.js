@@ -1,68 +1,140 @@
 import { Router } from 'express';
+import { v4 as uuidv4 } from 'uuid';
 import { asyncHandler } from '../middleware/errorHandler.js';
-import { validateCheckout } from '../middleware/validate.js';
 
 const router = Router();
 
+const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || 'sk_test_xxx';
+const PAYSTACK_BASE_URL = 'https://api.paystack.co';
+
 const plans = {
-  free: { name: 'Free', price: 0, features: ['10 matches/day', '5 voice calls/mo', '2 video calls/mo', 'Basic translation', 'Community support'] },
-  premium: { name: 'Premium', price: 9.99, features: ['Unlimited matches', 'Unlimited calls', 'Real-time translation', 'Priority matching', 'Priority support', 'See who liked you'] },
-  vip: { name: 'VIP', price: 19.99, features: ['Everything in Premium', 'Dedicated matchmaker', 'Group hangouts', 'Profile boost', 'VIP events', 'Early access'] },
+  premium: {
+    name: 'Premium',
+    amountNGN: 500000, // kobo (₦5,000)
+    amountUSD: 999, // cents ($9.99)
+    features: ['Unlimited matches', 'Real-time translation', 'See who liked you', 'Unlimited calls', 'Priority support']
+  },
+  vip: {
+    name: 'VIP',
+    amountNGN: 1000000, // kobo (₦10,000)
+    amountUSD: 2999, // cents ($29.99)
+    features: ['Everything in Premium', 'Dedicated matchmaker', 'Group hangouts', 'Profile boost', 'VIP badge']
+  },
 };
 
-const regionPricing = {
-  US: { premium: 9.99, vip: 19.99, currency: 'USD' },
-  EU: { premium: 8.99, vip: 17.99, currency: 'EUR' },
-  NG: { premium: 5000, vip: 10000, currency: 'NGN' },
-  IN: { premium: 5.99, vip: 12.99, currency: 'USD' },
-  BR: { premium: 7.99, vip: 15.99, currency: 'USD' },
-  SEA: { premium: 5.99, vip: 12.99, currency: 'USD' },
+const regionalPricing = {
+  NG: { premium: 500000, vip: 1000000, currency: 'NGN' },
+  US: { premium: 999, vip: 2999, currency: 'USD' },
+  UK: { premium: 799, vip: 1599, currency: 'GBP' },
+  IN: { premium: 599, vip: 1299, currency: 'USD' },
+  BR: { premium: 799, vip: 1599, currency: 'USD' },
+  EU: { premium: 899, vip: 1799, currency: 'EUR' },
 };
-
-// Get plans
-router.get('/plans', asyncHandler(async (req, res) => {
-  res.json({ plans, regionPricing });
-}));
 
 // Get pricing for region
 router.get('/pricing/:region', asyncHandler(async (req, res) => {
-  const pricing = regionPricing[req.params.region] || regionPricing.US;
-  res.json({ region: req.params.region, ...pricing });
+  const pricing = regionalPricing[req.params.region] || regionalPricing.NG;
+  res.json({ region: req.params.region, ...pricing, plans });
 }));
 
-// Create checkout session (mock - integrate Stripe/Paystack in production)
-router.post('/checkout', validateCheckout, asyncHandler(async (req, res) => {
-  const { plan, region, email } = req.body;
+// Initialize Paystack transaction
+router.post('/initialize', asyncHandler(async (req, res) => {
+  const { email, plan, region } = req.body;
 
-  const pricing = regionPricing[region] || regionPricing.US;
+  if (!email || !plan || !plans[plan]) {
+    return res.status(400).json({ error: 'Valid email and plan (premium/vip) required' });
+  }
 
-  console.log(`[${new Date().toISOString()}] Checkout initiated: ${email} -> ${plan} (${region})`);
+  const pricing = regionalPricing[region] || regionalPricing.NG;
+  const amount = plan === 'premium' ? pricing.premium : pricing.vip;
 
+  const reference = `friendzy_${plan}_${uuidv4().slice(0, 8)}`;
+
+  // In production, call Paystack API:
+  // const response = await axios.post(
+  //   `${PAYSTACK_BASE_URL}/transaction/initialize`,
+  //   { email, amount, reference, callback_url: `${process.env.FRONTEND_URL}/payment/verify` },
+  //   { headers: { Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`, 'Content-Type': 'application/json' } }
+  // );
+
+  // Mock response for development
   res.json({
-    sessionId: `session_${Date.now()}`,
-    plan: plans[plan].name,
-    amount: plan === 'free' ? 0 : pricing[plan],
+    success: true,
+    reference,
+    authorization_url: `https://checkout.paystack.com/${reference}`,
+    access_code: `test_${reference}`,
+    amount,
     currency: pricing.currency,
-    checkoutUrl: `https://checkout.friendzy.app/pay/${Date.now()}`,
-    provider: region === 'NG' ? 'paystack' : 'stripe',
+    plan,
   });
 }));
 
-// Webhook handler (mock)
+// Verify payment
+router.get('/verify/:reference', asyncHandler(async (req, res) => {
+  const { reference } = req.params;
+
+  // In production, verify with Paystack:
+  // const response = await axios.get(
+  //   `${PAYSTACK_BASE_URL}/transaction/verify/${reference}`,
+  //   { headers: { Authorization: `Bearer ${PAYSTACK_SECRET_KEY}` } }
+  // );
+
+  // Mock verification
+  res.json({
+    success: true,
+    status: 'success',
+    reference,
+    amount: 500000,
+    currency: 'NGN',
+    plan: 'premium',
+    subscription: {
+      status: 'active',
+      currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+  });
+}));
+
+// Paystack webhook
 router.post('/webhook', asyncHandler(async (req, res) => {
-  const { event, sessionId, status } = req.body;
-  console.log(`[${new Date().toISOString()}] Payment webhook: ${event} for ${sessionId} - ${status}`);
+  const { event, data } = req.body;
+
+  console.log(`[${new Date().toISOString()}] Paystack webhook: ${event}`);
+
+  switch (event) {
+    case 'charge.success':
+      // Payment successful — activate subscription
+      console.log(`Payment successful: ${data.reference}`);
+      break;
+    case 'subscription.create':
+      console.log(`Subscription created: ${data.subscription_code}`);
+      break;
+    case 'subscription.disable':
+      console.log(`Subscription disabled: ${data.subscription_code}`);
+      break;
+    case 'invoice.payment_failed':
+      console.log(`Payment failed for: ${data.subscription_code}`);
+      break;
+  }
+
   res.json({ received: true });
 }));
 
 // Get subscription status
 router.get('/subscription/:userId', asyncHandler(async (req, res) => {
   res.json({
-    plan: 'premium',
+    plan: 'free',
     status: 'active',
-    currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+    currentPeriodEnd: null,
     cancelAtPeriodEnd: false,
+    features: plans.premium.features.slice(0, 2), // Free gets limited features
   });
+}));
+
+// Cancel subscription
+router.post('/cancel', asyncHandler(async (req, res) => {
+  const { userId, reason } = req.body;
+  console.log(`Subscription cancelled: ${userId}, reason: ${reason || 'none'}`);
+  res.json({ success: true, message: 'Subscription cancelled. Access continues until end of billing period.' });
 }));
 
 export default router;
