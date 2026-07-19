@@ -1,4 +1,5 @@
-const API_BASE = import.meta.env.DEV ? 'http://localhost:3001/api' : '/api';
+// In dev: hit local backend. In prod: use Vercel proxy or full URL
+const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:3001/api' : '/api');
 
 class ApiClient {
   private token: string | null = null;
@@ -23,10 +24,15 @@ class ApiClient {
     const token = this.getToken();
     if (token) headers['Authorization'] = `Bearer ${token}`;
 
-    const res = await fetch(`${API_BASE}${path}`, {
-      method, headers,
-      body: body ? JSON.stringify(body) : undefined,
-    });
+    let res: Response;
+    try {
+      res = await fetch(`${API_BASE}${path}`, {
+        method, headers,
+        body: body ? JSON.stringify(body) : undefined,
+      });
+    } catch (fetchError) {
+      throw new Error('Cannot connect to server. Make sure the backend is running on port 3001.');
+    }
 
     if (!res.ok) {
       const error = await res.json().catch(() => ({ error: 'Request failed' }));
