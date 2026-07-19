@@ -1,7 +1,9 @@
 import express from 'express';
+import http from 'http';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import { v4 as uuidv4 } from 'uuid';
+import { initWebSocket } from './websocket.js';
 
 import { securityMiddleware } from './middleware/security.js';
 import { sanitizeInput } from './middleware/sanitize.js';
@@ -16,6 +18,7 @@ import moderationRoutes from './routes/moderation.js';
 import groupsRoutes from './routes/groups.js';
 import verificationRoutes from './routes/verification.js';
 import authProviderRoutes from './routes/auth-providers.js';
+import adminRoutes from './routes/admin.js';
 
 dotenv.config();
 
@@ -66,6 +69,7 @@ app.use('/api/moderation', moderationRoutes);
 app.use('/api/groups', groupsRoutes);
 app.use('/api/verification', verificationRoutes);
 app.use('/api/auth', authProviderRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Paystack webhook needs raw body for signature verification
 app.post('/api/payments/webhook', express.raw({ type: 'application/json' }), (req, res) => {
@@ -79,9 +83,13 @@ app.use(notFoundHandler);
 // Global error handler
 app.use(errorHandler);
 
-// Start server
-const server = app.listen(PORT, () => {
+// Create HTTP server and initialize WebSocket
+const server = http.createServer(app);
+initWebSocket(server);
+
+server.listen(PORT, () => {
   console.log(`[${new Date().toISOString()}] Friendzy API running on http://localhost:${PORT}`);
+  console.log(`[${new Date().toISOString()}] Socket.IO WebSocket server active`);
   console.log(`[${new Date().toISOString()}] Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 

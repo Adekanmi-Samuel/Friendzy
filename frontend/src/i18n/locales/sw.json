@@ -1,0 +1,6 @@
+{
+  "nav": { "dashboard": "Dashibodi", "safety": "Ulinzi", "pricing": "Bei", "signIn": "Ingia", "getStarted": "Anza", "profile": "Wasifu", "logOut": "Ondoka" },
+  "hero": { "title": "Shiriki kahawa na mtu anaelewa.", "subtitle": "Huko peke yako. Friendzy inakuunganisha na watu halisi kwa urafiki.", "cta": "Tafuta Watu Wako", "secondary": "Jinsi Inavyofanya Kazi" },
+  "auth": { "signIn": "Ingia", "createAccount": "Fungua Akaunti", "email": "Barua pepe", "password": "Nenosiri", "orEmail": "au endelea na barua pepe" },
+  "common": { "loading": "Inapakia...", "error": "Kuna kosa", "retry": "Jaribu tena", "save": "Hifadhi", "cancel": "Ghairi", "confirm": "Thibitisha", "close": "Funga" }
+}

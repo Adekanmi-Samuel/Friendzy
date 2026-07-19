@@ -35,7 +35,13 @@ export default function AuthModal({ isOpen, onClose, defaultView = 'login' }: Au
     e.preventDefault();
     setLoading(true);
     // In production: call API
-    setTimeout(() => setLoading(false), 1000);
+    setTimeout(() => {
+      setLoading(false);
+      localStorage.setItem('friendzy_logged_in', 'true');
+      onClose();
+      window.dispatchEvent(new Event('storage'));
+      window.location.href = '/dashboard';
+    }, 1000);
   };
 
   return (

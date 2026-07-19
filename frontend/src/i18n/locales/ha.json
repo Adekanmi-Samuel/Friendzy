@@ -1,0 +1,6 @@
+{
+  "nav": { "dashboard": "Dashboard", "safety": "Tsaro", "pricing": "Farashi", "signIn": "Shiga", "getStarted": "Fara", "profile": "Bayani", "logOut": "Fita" },
+  "hero": { "title": "Raba kofi da wanda ke fahimta maka.", "subtitle": "Ba kai kaɗai ba ne. Friendzy ya haɗa ka da mutane na gaskiya don abokanciya.", "cta": "Nemi Mutanen Ka", "secondary": "Yadda Yake Aiki" },
+  "auth": { "signIn": "Shiga", "createAccount": "Ƙirƙiri Asusu", "email": "Imel", "password": "Kalmar sirri", "orEmail": "ko ci gaba da imel" },
+  "common": { "loading": "Ana lodawa...", "error": "Wani abu ya faru", "retry": "Sake gwadawa", "save": "Ajiye", "cancel": "Soke", "confirm": "Tabbatar", "close": "Rufe" }
+}

@@ -1,0 +1,118 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "safety": "Safety",
+    "pricing": "Pricing",
+    "signIn": "Sign In",
+    "getStarted": "Get Started",
+    "profile": "Profile",
+    "logOut": "Log Out"
+  },
+  "hero": {
+    "title": "Share a coffee with someone who gets you.",
+    "subtitle": "You're not alone. Friendzy connects you with genuine people for friendship — not dating.",
+    "cta": "Find Your People",
+    "secondary": "How It Works"
+  },
+  "howItWorks": {
+    "title": "How Friendzy Works",
+    "subtitle": "Three simple steps to find friendships that last",
+    "discover": { "title": "Discover", "desc": "Answer a few questions about who you are and what you value in friendship." },
+    "connect": { "title": "Connect", "desc": "Our matching considers personality, interests, and communication style." },
+    "meet": { "title": "Meet", "desc": "Start a conversation, share a coffee, or plan an activity." }
+  },
+  "features": {
+    "title": "Why People Love Friendzy",
+    "subtitle": "More than an app — a community built on trust",
+    "safety": { "title": "Safety First", "desc": "Verified profiles, moderated spaces, and one-tap reporting." },
+    "translation": { "title": "Translation Built In", "desc": "Connect across 12 languages without awkward screenshots." },
+    "mood": { "title": "Mood Check-ins", "desc": "Share how you are actually feeling. It helps your matches understand you." },
+    "meetups": { "title": "Real Meetups", "desc": "From coffee to camping, move from screen to real life safely." }
+  },
+  "auth": {
+    "welcomeBack": "Welcome back",
+    "joinFriendzy": "Join Friendzy",
+    "resetPassword": "Reset password",
+    "signInToFind": "Sign in to find your people",
+    "startFinding": "Start finding genuine friendships",
+    "enterEmail": "Enter your email to reset",
+    "email": "Email",
+    "password": "Password",
+    "fullName": "Full Name",
+    "confirmPassword": "Confirm Password",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot password?",
+    "signIn": "Sign In",
+    "createAccount": "Create Account",
+    "sendResetLink": "Send Reset Link",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "forgotAccount": "Remember your password?",
+    "signUp": "Sign up",
+    "signInLink": "Sign in",
+    "google": "Continue with Google",
+    "facebook": "Continue with Facebook",
+    "twitter": "Continue with X (Twitter)",
+    "orEmail": "or continue with email"
+  },
+  "pricing": {
+    "title": "Simple, transparent pricing",
+    "subtitle": "Find genuine connections without breaking the bank.",
+    "free": "Free",
+    "premium": "Premium",
+    "vip": "VIP",
+    "month": "month",
+    "forever": "forever",
+    "mostPopular": "Most Popular",
+    "getStartedFree": "Get Started Free",
+    "startPremium": "Start Premium",
+    "goVip": "Go VIP"
+  },
+  "safety": {
+    "title": "Your safety is our promise",
+    "subtitle": "Every feature designed with your wellbeing in mind."
+  },
+  "chat": {
+    "messages": "Messages",
+    "searchConversations": "Search conversations...",
+    "typeMessage": "Type a message...",
+    "online": "Online",
+    "offline": "Offline"
+  },
+  "footer": {
+    "tagline": "You're not alone. Find genuine connections with people who understand you.",
+    "platform": "Platform",
+    "support": "Support",
+    "connect": "Connect",
+    "copyright": "© 2025 Friendzy. Making the world less lonely, one friendship at a time."
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "notifications": "Notifications",
+    "privacy": "Privacy",
+    "account": "Account"
+  },
+  "profile": {
+    "title": "My Profile",
+    "editProfile": "Edit Profile",
+    "mood": "Current Mood",
+    "interests": "Interests",
+    "about": "About Me"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "retry": "Try again",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "close": "Close",
+    "search": "Search",
+    "noResults": "No results found",
+    "seeAll": "See All"
+  }
+}

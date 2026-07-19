@@ -13,7 +13,9 @@ const contacts = [
   { name: 'Chen', status: 'online', lastMessage: 'Let us plan something!', time: '5h', compatibility: 78, unread: 0 },
 ];
 
-const mockMessages = [
+type Message = { sender: 'me' | 'them'; text: string; time: string };
+
+const mockMessages: Message[] = [
   { sender: 'them', text: 'Hey! I noticed we both love hiking and photography. Have you done any good trails recently?', time: '10:30 AM' },
   { sender: 'me', text: 'Yes! I went to this beautiful nature reserve last weekend. The sunrise views were incredible.', time: '10:32 AM' },
   { sender: 'them', text: 'That sounds amazing! I have been wanting to explore more trails around here. Would love to hear more about it.', time: '10:33 AM' },
@@ -23,20 +25,44 @@ const mockMessages = [
   { sender: 'them', text: 'Oh I love that! I actually have a small telescope. We should do a camping trip sometime — stargazing, campfire conversations, the whole experience!', time: '10:39 AM' },
 ];
 
+const initialHistories: Record<number, Message[]> = {
+  0: [...mockMessages],
+  1: [{ sender: 'them', text: 'Have you tried that new cafe?', time: '15m' }],
+  2: [{ sender: 'them', text: 'I will send you the article', time: '1h' }],
+  3: [{ sender: 'them', text: 'Great chatting with you!', time: '3h' }],
+  4: [{ sender: 'them', text: 'Let us plan something!', time: '5h' }],
+};
+
 export default function Chat() {
   const [selectedContact, setSelectedContact] = useState(0);
   const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState(mockMessages);
+  
+  const [chatHistories, setChatHistories] = useState<Record<number, Message[]>>(() => {
+    const saved = localStorage.getItem('friendzy_chats');
+    return saved ? JSON.parse(saved) : initialHistories;
+  });
+
+  const currentMessages = chatHistories[selectedContact] || [];
   const [showMood, setShowMood] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    localStorage.setItem('friendzy_chats', JSON.stringify(chatHistories));
+  }, [chatHistories]);
+
+  useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [currentMessages, selectedContact]);
 
   const handleSend = () => {
     if (!message.trim()) return;
-    setMessages(prev => [...prev, { sender: 'me', text: message, time: 'now' }]);
+    setChatHistories(prev => ({
+      ...prev,
+      [selectedContact]: [
+        ...(prev[selectedContact] || []),
+        { sender: 'me', text: message, time: 'now' }
+      ]
+    }));
     setMessage('');
   };
 
@@ -154,7 +180,7 @@ export default function Chat() {
               </span>
             </div>
 
-            {messages.map((msg, i) => (
+            {currentMessages.map((msg, i) => (
               <div key={i} className={`flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-xs md:max-w-md px-4 py-2.5 ${
                   msg.sender === 'me' ? 'msg-sent' : 'msg-received'

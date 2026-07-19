@@ -54,6 +54,10 @@ const recentActivity = [
 export default function Dashboard() {
   const [mood, setMood] = useState<'great' | 'good' | 'okay' | 'low'>('good');
   const [matches, setMatches] = useState(mockMatches);
+  const [showFilters, setShowFilters] = useState(false);
+  const [minCompat, setMinCompat] = useState(80);
+
+  const filteredMatches = matches.filter(m => m.compatibility >= minCompat);
 
   const handleRefresh = () => {
     setMatches(prev => [...prev].sort(() => Math.random() - 0.5));
@@ -108,7 +112,9 @@ export default function Dashboard() {
                   Your Top Matches
                 </h2>
                 <div className="flex items-center gap-2">
-                  <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-pebble text-sm text-slate hover:bg-linen transition-all cursor-pointer">
+                  <button 
+                    onClick={() => setShowFilters(!showFilters)}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-pebble text-sm transition-all cursor-pointer ${showFilters ? 'bg-amber/10 text-amber' : 'bg-white text-slate hover:bg-linen'}`}>
                     <Filter size={14} /> Filter
                   </button>
                   <button
@@ -121,8 +127,23 @@ export default function Dashboard() {
               </div>
             </FadeUp>
 
+            {showFilters && (
+              <FadeUp>
+                <div className="mb-6 p-4 rounded-2xl bg-white border border-pebble flex items-center gap-4">
+                  <span className="text-sm font-medium text-ink">Minimum Compatibility: {minCompat}%</span>
+                  <input 
+                    type="range" 
+                    min="50" max="100" 
+                    value={minCompat} 
+                    onChange={e => setMinCompat(Number(e.target.value))}
+                    className="flex-1 accent-amber"
+                  />
+                </div>
+              </FadeUp>
+            )}
+
             <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
-              {matches.map((match, i) => (
+              {filteredMatches.length > 0 ? filteredMatches.map((match, i) => (
                 <FadeUp key={match.name} delay={0.15 + i * 0.08}>
                   <MatchCard
                     {...match}
@@ -131,7 +152,11 @@ export default function Dashboard() {
                     onChat={() => {}}
                   />
                 </FadeUp>
-              ))}
+              )) : (
+                <div className="col-span-2 text-center py-10 text-slate">
+                  No matches found for this criteria. Try lowering the compatibility requirement!
+                </div>
+              )}
             </div>
 
             <FadeUp delay={0.6}>

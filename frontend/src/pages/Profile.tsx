@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Edit3, Camera, MapPin, Calendar, Heart, Shield, Plus, X } from 'lucide-react';
 import Navbar from '../components/Navbar';
@@ -13,7 +13,7 @@ const profileData = {
   location: 'San Francisco, CA',
   bio: 'Creative thinker who loves connecting with people over shared interests. I believe every conversation is a chance to learn something new. Passionate about art, technology, and making the world a little less lonely.',
   joinDate: 'March 2025',
-  mood: 'good' as const,
+  mood: 'good' as 'great' | 'good' | 'okay' | 'low',
   interests: ['Photography', 'Hiking', 'Art', 'Music', 'Cooking', 'Travel', 'Reading', 'Yoga'],
   traits: ['Empathetic', 'Creative', 'Listener', 'Adventurous'],
   lookingFor: ['Deep connections', 'Activity partners', 'Study buddies'],
@@ -36,20 +36,36 @@ const recentFriends = [
 
 export default function Profile() {
   const [isEditing, setIsEditing] = useState(false);
-  const [bio, setBio] = useState(profileData.bio);
-  const [mood, setMood] = useState<'great' | 'good' | 'okay' | 'low'>(profileData.mood);
+  const [profile, setProfile] = useState<typeof profileData>(() => {
+    const saved = localStorage.getItem('friendzy_profile');
+    return saved ? JSON.parse(saved) : profileData;
+  });
+
+  const [bio, setBio] = useState(profile.bio);
+  const [mood, setMood] = useState<'great' | 'good' | 'okay' | 'low'>(profile.mood);
   const [newInterest, setNewInterest] = useState('');
-  const [interests, setInterests] = useState(profileData.interests);
+  const [interests, setInterests] = useState(profile.interests);
+
+  useEffect(() => {
+    localStorage.setItem('friendzy_profile', JSON.stringify(profile));
+  }, [profile]);
+
+  const toggleEdit = () => {
+    if (isEditing) {
+      setProfile((prev: typeof profile) => ({ ...prev, bio, mood, interests }));
+    }
+    setIsEditing(!isEditing);
+  };
 
   const addInterest = () => {
     if (newInterest.trim() && !interests.includes(newInterest.trim())) {
-      setInterests(prev => [...prev, newInterest.trim()]);
+      setInterests((prev: string[]) => [...prev, newInterest.trim()]);
       setNewInterest('');
     }
   };
 
   const removeInterest = (interest: string) => {
-    setInterests(prev => prev.filter(i => i !== interest));
+    setInterests((prev: string[]) => prev.filter((i: string) => i !== interest));
   };
 
   return (
@@ -91,7 +107,7 @@ export default function Profile() {
                 </div>
 
                 <div className="flex items-center gap-2 md:pb-1">
-                  <button onClick={() => setIsEditing(!isEditing)}
+                  <button onClick={toggleEdit}
                     className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber text-white text-sm font-medium hover:bg-amber-light transition-colors cursor-pointer">
                     <Edit3 size={14} /> {isEditing ? 'Save' : 'Edit Profile'}
                   </button>

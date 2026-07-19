@@ -1,0 +1,6 @@
+{
+  "nav": { "dashboard": "Painel", "safety": "Seguranca", "pricing": "Precos", "signIn": "Entrar", "getStarted": "Comecar", "profile": "Perfil", "logOut": "Sair" },
+  "hero": { "title": "Compartilhe um cafe com alguem que voce entende.", "subtitle": "Voce nao esta sozinho. Friendzy conecta voce com pessoas genuinas para amizade.", "cta": "Encontre Suas Pessoas", "secondary": "Como Funciona" },
+  "auth": { "signIn": "Entrar", "createAccount": "Criar Conta", "email": "E-mail", "password": "Senha", "orEmail": "ou continuar com e-mail" },
+  "common": { "loading": "Carregando...", "error": "Algo deu errado", "retry": "Tentar novamente", "save": "Salvar", "cancel": "Cancelar", "confirm": "Confirmar", "close": "Fechar" }
+}

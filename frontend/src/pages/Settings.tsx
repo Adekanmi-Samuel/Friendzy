@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, User, Bell, Shield, Globe, Palette, LogOut, ChevronRight, Eye, EyeOff, Lock, Smartphone, Mail, Trash2 } from 'lucide-react';
 import Navbar from '../components/Navbar';
@@ -39,9 +39,26 @@ export default function Settings() {
   const [shareActivity, setShareActivity] = useState(true);
   const [twoFactor, setTwoFactor] = useState(true);
 
-  // Appearance
   const [theme, setTheme] = useState<'light' | 'dark' | 'auto'>('light');
   const [fontSize, setFontSize] = useState<'small' | 'medium' | 'large'>('medium');
+
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else if (theme === 'light') {
+      document.documentElement.classList.remove('dark');
+    } else {
+      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    }
+  }, [theme]);
+
+  const handleSave = () => {
+    alert('Settings saved successfully!');
+  };
 
   const ToggleSwitch = ({ enabled, onChange }: { enabled: boolean; onChange: (v: boolean) => void }) => (
     <button
@@ -445,7 +462,7 @@ export default function Settings() {
             {/* Save Button */}
             <FadeUp delay={0.2}>
               <div className="mt-6 flex justify-end">
-                  <button className="px-6 py-3 rounded-2xl bg-amber text-white text-sm font-semibold hover:bg-amber-light transition-colors cursor-pointer">
+                  <button onClick={handleSave} className="px-6 py-3 rounded-2xl bg-amber text-white text-sm font-semibold hover:bg-amber-light transition-colors cursor-pointer">
                     Save Changes
                   </button>
               </div>

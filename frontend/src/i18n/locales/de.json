@@ -1,0 +1,6 @@
+{
+  "nav": { "dashboard": "Dashboard", "safety": "Sicherheit", "pricing": "Preise", "signIn": "Anmelden", "getStarted": "Loslegen", "profile": "Profil", "logOut": "Abmelden" },
+  "hero": { "title": "Teilen Sie einen Kaffee mit jemandem, der Sie versteht.", "subtitle": "Sie sind nicht allein. Friendzy verbindet Sie mit echten Menschen fuer Freundschaft.", "cta": "Finden Sie Ihre Leute", "secondary": "So funktioniert es" },
+  "auth": { "signIn": "Anmelden", "createAccount": "Konto erstellen", "email": "E-Mail", "password": "Passwort", "orEmail": "oder weiter mit E-Mail" },
+  "common": { "loading": "Laden...", "error": "Etwas ist schiefgelaufen", "retry": "Erneut versuchen", "save": "Speichern", "cancel": "Abbrechen", "confirm": "Bestaetigen", "close": "Schliessen" }
+}

@@ -1,0 +1,6 @@
+{
+  "nav": { "dashboard": "Dasbor", "safety": "Keamanan", "pricing": "Harga", "signIn": "Masuk", "getStarted": "Mulai", "profile": "Profil", "logOut": "Keluar" },
+  "hero": { "title": "Berbagi kopi dengan seseorang yang memahami Anda.", "subtitle": "Anda tidak sendirian. Friendzy menghubungkan Anda dengan orang-orang asli untuk pertemanan.", "cta": "Temukan Orang Anda", "secondary": "Cara Kerja" },
+  "auth": { "signIn": "Masuk", "createAccount": "Buat Akun", "email": "Email", "password": "Kata Sandi", "orEmail": "atau lanjutkan dengan email" },
+  "common": { "loading": "Memuat...", "error": "Terjadi kesalahan", "retry": "Coba lagi", "save": "Simpan", "cancel": "Batal", "confirm": "Konfirmasi", "close": "Tutup" }
+}

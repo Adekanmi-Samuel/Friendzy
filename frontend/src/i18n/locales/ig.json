@@ -1,0 +1,6 @@
+{
+  "nav": { "dashboard": "Dashboard", "safety": "Nchekwa", "pricing": "Ego", "signIn": "Bata", "getStarted": "Malite", "profile": "Profil", "logOut": "Pụọ" },
+  "hero": { "title": "Kekọrịta kọfị na onye na-agaghị gị.", "subtitle": "Ị bụghị naanị onye na-enwe. Friendzy jikọrọ gị na ndị mmadụ n'ezie maka enwe enwe mmadụ.", "cta": "Chọta Ndị Gị", "secondary": "Otu Si Eme Okwu" },
+  "auth": { "signIn": "Bata", "createAccount": "Mepụta Akaụntụ", "email": "Email", "password": "Paswọọdụ", "orEmail": "ma ọ bụ gaa n'ihu na email" },
+  "common": { "loading": "Na-ebugo...", "error": "Ihe mgbe e mechala", "retry": "Nyochaa ọzọ", "save": "Chekwaa", "cancel": "Kagbuo", "confirm": "Nyochaa", "close": "Mechie" }
+}

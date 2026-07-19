@@ -1,0 +1,6 @@
+{
+  "nav": { "dashboard": "Dashboard", "safety": "Kaligtasan", "pricing": "Presyo", "signIn": "Mag-sign In", "getStarted": "Magsimula", "profile": "Profile", "logOut": "Mag-log Out" },
+  "hero": { "title": "Magbahagi ng kape sa taong nakakaintindi sa iyo.", "subtitle": "Hindi ka nag-iisa. Friendzy ang nagdurugtong sa iyo sa mga taong totoo para sa pagkakaibigan.", "cta": "Hanapin ang Iyong Mga Tao", "secondary": "Paano Gumagana" },
+  "auth": { "signIn": "Mag-sign In", "createAccount": "Gumawa ng Account", "email": "Email", "password": "Password", "orEmail": "o magpatuloy sa email" },
+  "common": { "loading": "Naglo-load...", "error": "May mali", "retry": "Subukan muli", "save": "I-save", "cancel": "Kanselahin", "confirm": "Kumpirmahin", "close": "Isara" }
+}

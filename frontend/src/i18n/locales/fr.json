@@ -1,0 +1,118 @@
+{
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "safety": "Securite",
+    "pricing": "Tarifs",
+    "signIn": "Se connecter",
+    "getStarted": "Commencer",
+    "profile": "Profil",
+    "logOut": "Deconnexion"
+  },
+  "hero": {
+    "title": "Partagez un cafe avec quelqu'un qui vous comprend.",
+    "subtitle": "Vous n'etes pas seul. Friendzy vous connecte avec des personnes authentiques pour l'amitie.",
+    "cta": "Trouvez Votre Groupe",
+    "secondary": "Comment ca marche"
+  },
+  "howItWorks": {
+    "title": "Comment Friendzy Fonctionne",
+    "subtitle": "Trois etapes simples pour trouver des amities durables",
+    "discover": { "title": "Decouvrez", "desc": "Repondez a quelques questions sur qui vous etes et ce que vous appreciez dans l'amitie." },
+    "connect": { "title": "Connectez", "desc": "Notre algorithme considere la personnalite, les interets et le style de communication." },
+    "meet": { "title": "Rencontrez", "desc": "Lancez une conversation, partagez un cafe ou planifiez une activite." }
+  },
+  "features": {
+    "title": "Pourquoi les Gens Aiment Friendzy",
+    "subtitle": "Plus qu'une app - une communaute basee sur la confiance",
+    "safety": { "title": "Securite d'abord", "desc": "Profils verifies, espaces moderes et signalement en un clic." },
+    "translation": { "title": "Traduction Integree", "desc": "Connectez-vous dans 12 langues sans captures d'ecran gênantes." },
+    "mood": { "title": "Etats d'Esprit", "desc": "Partagez comment vous vous sentez vraiment. Cela aide vos contacts a vous comprendre." },
+    "meetups": { "title": "Rencontres Reelles", "desc": "Du cafe au camping, passez de l'ecran a la vie reelle en toute securite." }
+  },
+  "auth": {
+    "welcomeBack": "Bon retour",
+    "joinFriendzy": "Rejoignez Friendzy",
+    "resetPassword": "Reinitialiser le mot de passe",
+    "signInToFind": "Connectez-vous pour trouver vos gens",
+    "startFinding": "Commencez a trouver des amities authentiques",
+    "enterEmail": "Entrez votre email pour reinitialiser",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "fullName": "Nom Complet",
+    "confirmPassword": "Confirmer le Mot de Passe",
+    "rememberMe": "Se souvenir de moi",
+    "forgotPassword": "Mot de passe oublie?",
+    "signIn": "Se connecter",
+    "createAccount": "Creer un compte",
+    "sendResetLink": "Envoyer le lien de reinitialisation",
+    "noAccount": "Vous n'avez pas de compte?",
+    "hasAccount": "Vous avez deja un compte?",
+    "forgotAccount": "Vous vous souvenez de votre mot de passe?",
+    "signUp": "S'inscrire",
+    "signInLink": "Se connecter",
+    "google": "Continuer avec Google",
+    "facebook": "Continuer avec Facebook",
+    "twitter": "Continuer avec X (Twitter)",
+    "orEmail": "ou continuer avec e-mail"
+  },
+  "pricing": {
+    "title": "Des prix simples et transparents",
+    "subtitle": "Trouvez des connexions authentiques sans vous ruiner.",
+    "free": "Gratuit",
+    "premium": "Premium",
+    "vip": "VIP",
+    "month": "mois",
+    "forever": "pour toujours",
+    "mostPopular": "Plus Populaire",
+    "getStartedFree": "Commencer Gratuitement",
+    "startPremium": "Passer Premium",
+    "goVip": "Devenir VIP"
+  },
+  "safety": {
+    "title": "Votre securite est notre promesse",
+    "subtitle": "Chaque fonctionnalite concue pour votre bien-etre."
+  },
+  "chat": {
+    "messages": "Messages",
+    "searchConversations": "Rechercher des conversations...",
+    "typeMessage": "Ecrivez un message...",
+    "online": "En ligne",
+    "offline": "Hors ligne"
+  },
+  "footer": {
+    "tagline": "Vous n'etes pas seul. Trouvez des connexions authentiques avec des personnes qui vous comprennent.",
+    "platform": "Plateforme",
+    "support": "Support",
+    "connect": "Connecter",
+    "copyright": "© 2025 Friendzy. Rendre le monde moins seul, une amitie a la fois."
+  },
+  "settings": {
+    "title": "Parametres",
+    "language": "Langue",
+    "notifications": "Notifications",
+    "privacy": "Confidentialite",
+    "account": "Compte"
+  },
+  "profile": {
+    "title": "Mon Profil",
+    "editProfile": "Modifier le Profil",
+    "mood": "Etat d'Esprit",
+    "interests": "Interets",
+    "about": "A Propos de Moi"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Une erreur s'est produite",
+    "retry": "Reessayer",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "back": "Retour",
+    "next": "Suivant",
+    "submit": "Soumettre",
+    "close": "Fermer",
+    "search": "Rechercher",
+    "noResults": "Aucun resultat trouve",
+    "seeAll": "Voir Tout"
+  }
+}

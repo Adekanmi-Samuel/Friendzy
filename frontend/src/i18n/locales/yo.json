@@ -1,0 +1,6 @@
+{
+  "nav": { "dashboard": "Dashboard", "safety": "Aabo", "pricing": "Iye owo", "signIn": "Wole", "getStarted": "Bere", "profile": "Profil", "logOut": "Jade" },
+  "hero": { "title": "Pinn kofi pẹlu ẹni ti o loye yin.", "subtitle": "Iwo ko jọ okan. Friendzy so yin pọ pelu awon eniyan tootọ fun ibaranmi.", "cta": "Wa Awọn Ẹnikeji Rẹ", "secondary": "Bawo Ni O Se Ri Ise" },
+  "auth": { "signIn": "Wole", "createAccount": "Ṣẹda Akọwọ", "email": "Imeeli", "password": "Ọrọ igbaniṣẹ", "orEmail": "tabi tesiwaju pẹlu imeeli" },
+  "common": { "loading": "N gbe...", "error": "Ohunkohun kosi yato", "retry": "Tun try", "save": "Fi pamọ", "cancel": "Fagile", "confirm": "Jẹrisi", "close": "Tipa" }
+}

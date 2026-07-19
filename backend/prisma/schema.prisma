@@ -1,0 +1,401 @@
+// Friendzy - Database Schema
+// Social platform for finding and connecting with friends
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Users & Auth ────────────────────────────────────────────────
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  username     String    @unique
+  passwordHash String?   @map("password_hash")
+  displayName  String?   @map("display_name")
+  avatarUrl    String?   @map("avatar_url")
+  bio          String?
+  dateOfBirth  DateTime? @map("date_of_birth")
+  location     String?
+  latitude     Float?
+  longitude    Float?
+  isVerified   Boolean   @default(false) @map("is_verified")
+  isActive     Boolean   @default(true) @map("is_active")
+  lastSeen     DateTime? @map("last_seen")
+  role         UserRole  @default(USER)
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  profile                Profile?
+  authProviders          AuthProvider[]
+  sentFriendRequests     FriendRequest[]  @relation("sender")
+  receivedFriendRequests FriendRequest[]  @relation("receiver")
+  friendshipsA           Friendship[]     @relation("userA")
+  friendshipsB           Friendship[]     @relation("userB")
+  sentMessages           Message[]        @relation("sender")
+  chatRooms              ChatRoomMember[]
+  groupMemberships       GroupMember[]
+  createdGroups          Group[]          @relation("groupCreator")
+  posts                  Post[]
+  comments               Comment[]
+  reactions              Reaction[]
+  notifications          Notification[]
+  sentVerifications      Verification[]   @relation("verifier")
+  receivedVerifications  Verification[]   @relation("target")
+  blockedUsers           Block[]          @relation("blocker")
+  blockedByUsers         Block[]          @relation("blocked")
+  reports                Report[]         @relation("reporter")
+  reportedUsers          Report[]         @relation("reported")
+  payments               Payment[]
+  refreshTokens          RefreshToken[]
+
+  @@map("users")
+}
+
+enum UserRole {
+  USER
+  MODERATOR
+  ADMIN
+}
+
+model AuthProvider {
+  id         String   @id @default(cuid())
+  provider   String // "google", "discord", etc.
+  providerId String   @map("provider_id")
+  userId     String   @map("user_id")
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@unique([provider, providerId])
+  @@map("auth_providers")
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("refresh_tokens")
+}
+
+// ─── Profile ─────────────────────────────────────────────────────
+
+model Profile {
+  id             String   @id @default(cuid())
+  userId         String   @unique @map("user_id")
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  interests      String[] // Array of interest tags
+  lookingFor     String[] @map("looking_for") // ["friends", "gaming", "hiking", ...]
+  ageRangeMin    Int?     @map("age_range_min")
+  ageRangeMax    Int?     @map("age_range_max")
+  maxDistance    Int?     @map("max_distance") // in kilometers
+  isDiscoverable Boolean  @default(true) @map("is_discoverable")
+  socialLinks    Json?    @map("social_links")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@map("profiles")
+}
+
+// ─── Friend Requests & Friendships ───────────────────────────────
+
+model FriendRequest {
+  id         String              @id @default(cuid())
+  senderId   String              @map("sender_id")
+  sender     User                @relation("sender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId String              @map("receiver_id")
+  receiver   User                @relation("receiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  status     FriendRequestStatus @default(PENDING)
+  message    String?
+  createdAt  DateTime            @default(now()) @map("created_at")
+  updatedAt  DateTime            @updatedAt @map("updated_at")
+
+  @@unique([senderId, receiverId])
+  @@map("friend_requests")
+}
+
+enum FriendRequestStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  CANCELLED
+}
+
+model Friendship {
+  id        String   @id @default(cuid())
+  userAId   String   @map("user_a_id")
+  userA     User     @relation("userA", fields: [userAId], references: [id], onDelete: Cascade)
+  userBId   String   @map("user_b_id")
+  userB     User     @relation("userB", fields: [userBId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([userAId, userBId])
+  @@map("friendships")
+}
+
+// ─── Chat / Messaging ────────────────────────────────────────────
+
+model ChatRoom {
+  id        String   @id @default(cuid())
+  name      String?
+  isGroup   Boolean  @default(false) @map("is_group")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  messages Message[]
+  members  ChatRoomMember[]
+
+  @@map("chat_rooms")
+}
+
+model ChatRoomMember {
+  id         String   @id @default(cuid())
+  chatRoomId String   @map("chat_room_id")
+  chatRoom   ChatRoom @relation(fields: [chatRoomId], references: [id], onDelete: Cascade)
+  userId     String   @map("user_id")
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  joinedAt   DateTime @default(now()) @map("joined_at")
+
+  @@unique([chatRoomId, userId])
+  @@map("chat_room_members")
+}
+
+model Message {
+  id         String      @id @default(cuid())
+  chatRoomId String      @map("chat_room_id")
+  chatRoom   ChatRoom    @relation(fields: [chatRoomId], references: [id], onDelete: Cascade)
+  senderId   String      @map("sender_id")
+  sender     User        @relation("sender", fields: [senderId], references: [id], onDelete: Cascade)
+  content    String
+  type       MessageType @default(TEXT)
+  isRead     Boolean     @default(false) @map("is_read")
+  createdAt  DateTime    @default(now()) @map("created_at")
+  updatedAt  DateTime    @updatedAt @map("updated_at")
+
+  @@index([chatRoomId, createdAt])
+  @@map("messages")
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  SYSTEM
+}
+
+// ─── Groups ──────────────────────────────────────────────────────
+
+model Group {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  avatarUrl   String?  @map("avatar_url")
+  creatorId   String   @map("creator_id")
+  creator     User     @relation("groupCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+  isPublic    Boolean  @default(true) @map("is_public")
+  maxMembers  Int      @default(50) @map("max_members")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  members GroupMember[]
+  posts   Post[]
+
+  @@map("groups")
+}
+
+model GroupMember {
+  id       String    @id @default(cuid())
+  groupId  String    @map("group_id")
+  group    Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  userId   String    @map("user_id")
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role     GroupRole @default(MEMBER)
+  joinedAt DateTime  @default(now()) @map("joined_at")
+
+  @@unique([groupId, userId])
+  @@map("group_members")
+}
+
+enum GroupRole {
+  MEMBER
+  MODERATOR
+  ADMIN
+  OWNER
+}
+
+// ─── Posts & Interactions ────────────────────────────────────────
+
+model Post {
+  id        String   @id @default(cuid())
+  authorId  String   @map("author_id")
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  groupId   String?  @map("group_id")
+  group     Group?   @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  content   String
+  imageUrl  String?  @map("image_url")
+  isPublic  Boolean  @default(true) @map("is_public")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  comments  Comment[]
+  reactions Reaction[]
+
+  @@map("posts")
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  postId    String   @map("post_id")
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  authorId  String   @map("author_id")
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  content   String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("comments")
+}
+
+model Reaction {
+  id        String       @id @default(cuid())
+  postId    String       @map("post_id")
+  post      Post         @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String       @map("user_id")
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      ReactionType @default(LIKE)
+  createdAt DateTime     @default(now()) @map("created_at")
+
+  @@unique([postId, userId])
+  @@map("reactions")
+}
+
+enum ReactionType {
+  LIKE
+  LOVE
+  LAUGH
+  WOW
+}
+
+// ─── Notifications ───────────────────────────────────────────────
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String // "friend_request", "message", "group_invite", etc.
+  title     String
+  body      String?
+  link      String?
+  isRead    Boolean  @default(false) @map("is_read")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId, isRead, createdAt])
+  @@map("notifications")
+}
+
+// ─── Verification ────────────────────────────────────────────────
+
+model Verification {
+  id         String             @id @default(cuid())
+  verifierId String             @map("verifier_id")
+  verifier   User               @relation("verifier", fields: [verifierId], references: [id], onDelete: Cascade)
+  targetId   String             @map("target_id")
+  target     User               @relation("target", fields: [targetId], references: [id], onDelete: Cascade)
+  status     VerificationStatus @default(PENDING)
+  message    String?
+  createdAt  DateTime           @default(now()) @map("created_at")
+  updatedAt  DateTime           @updatedAt @map("updated_at")
+
+  @@map("verifications")
+}
+
+enum VerificationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// ─── Blocking & Reporting ────────────────────────────────────────
+
+model Block {
+  id        String   @id @default(cuid())
+  blockerId String   @map("blocker_id")
+  blocker   User     @relation("blocker", fields: [blockerId], references: [id], onDelete: Cascade)
+  blockedId String   @map("blocked_id")
+  blocked   User     @relation("blocked", fields: [blockedId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([blockerId, blockedId])
+  @@map("blocks")
+}
+
+model Report {
+  id          String       @id @default(cuid())
+  reporterId  String       @map("reporter_id")
+  reporter    User         @relation("reporter", fields: [reporterId], references: [id], onDelete: Cascade)
+  reportedId  String       @map("reported_id")
+  reported    User         @relation("reported", fields: [reportedId], references: [id], onDelete: Cascade)
+  reason      ReportReason
+  description String?
+  status      ReportStatus @default(PENDING)
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+
+  @@map("reports")
+}
+
+enum ReportReason {
+  SPAM
+  HARASSMENT
+  INAPPROPRIATE_CONTENT
+  FAKE_PROFILE
+  OTHER
+}
+
+enum ReportStatus {
+  PENDING
+  REVIEWED
+  RESOLVED
+  DISMISSED
+}
+
+// ─── Payments ────────────────────────────────────────────────────
+
+model Payment {
+  id          String        @id @default(cuid())
+  userId      String        @map("user_id")
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount      Int // in cents
+  currency    String        @default("usd")
+  type        PaymentType
+  status      PaymentStatus @default(PENDING)
+  stripeId    String?       @unique @map("stripe_id")
+  description String?
+  metadata    Json?
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  @@map("payments")
+}
+
+enum PaymentType {
+  SUBSCRIPTION
+  ONE_TIME
+  REFUND
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  CANCELLED
+  REFUNDED
+}

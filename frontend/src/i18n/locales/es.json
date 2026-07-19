@@ -1,0 +1,118 @@
+{
+  "nav": {
+    "dashboard": "Panel",
+    "safety": "Seguridad",
+    "pricing": "Precios",
+    "signIn": "Iniciar Sesion",
+    "getStarted": "Comenzar",
+    "profile": "Perfil",
+    "logOut": "Cerrar Sesion"
+  },
+  "hero": {
+    "title": "Comparte un cafe con alguien que te entiende.",
+    "subtitle": "No estas solo. Friendzy te conecta con personas genuinas para la amistad.",
+    "cta": "Encuentra Tu Gente",
+    "secondary": "Como Funciona"
+  },
+  "howItWorks": {
+    "title": "Como Funciona Friendzy",
+    "subtitle": "Tres simples pasos para encontrar amistades que duren",
+    "discover": { "title": "Descubre", "desc": "Responde algunas preguntas sobre quien eres y que valoras en la amistad." },
+    "connect": { "title": "Conecta", "desc": "Nuestra busqueda considera personalidad, intereses y estilo de comunicacion." },
+    "meet": { "title": "Encuentra", "desc": "Inicia una conversacion, comparte un cafe o planifica una actividad." }
+  },
+  "features": {
+    "title": "Por Que Amamos Friendzy",
+    "subtitle": "Mas que una app - una comunidad construida en confianza",
+    "safety": { "title": "Seguridad Primero", "desc": "Perfiles verificados, espacios moderados y reportes con un toque." },
+    "translation": { "title": "Traduccion Integrada", "desc": "Conecta en 12 idiomas sin capturas de pantalla incomodas." },
+    "mood": { "title": "Estado de Animo", "desc": "Comparte como te sientes realmente. Ayuda a tus contactos a entenderte." },
+    "meetups": { "title": "Encuentros Reales", "desc": "De cafe a camping, pasa de la pantalla a la vida real con seguridad." }
+  },
+  "auth": {
+    "welcomeBack": "Bienvenido de nuevo",
+    "joinFriendzy": "Unete a Friendzy",
+    "resetPassword": "Restablecer contrasena",
+    "signInToFind": "Inicia sesion para encontrar a tu gente",
+    "startFinding": "Empieza a encontrar amistades genuinas",
+    "enterEmail": "Ingresa tu correo para restablecer",
+    "email": "Correo",
+    "password": "Contrasena",
+    "fullName": "Nombre Completo",
+    "confirmPassword": "Confirmar Contrasena",
+    "rememberMe": "Recordarme",
+    "forgotPassword": "Olvidaste tu contrasena?",
+    "signIn": "Iniciar Sesion",
+    "createAccount": "Crear Cuenta",
+    "sendResetLink": "Enviar Enlace de Restablecimiento",
+    "noAccount": "No tienes una cuenta?",
+    "hasAccount": "Ya tienes una cuenta?",
+    "forgotAccount": "Recuerdas tu contrasena?",
+    "signUp": "Registrarse",
+    "signInLink": "Iniciar sesion",
+    "google": "Continuar con Google",
+    "facebook": "Continuar con Facebook",
+    "twitter": "Continuar con X (Twitter)",
+    "orEmail": "o continuar con correo"
+  },
+  "pricing": {
+    "title": "Precios simples y transparentes",
+    "subtitle": "Encuentra conexiones genuinas sin romper el banco.",
+    "free": "Gratis",
+    "premium": "Premium",
+    "vip": "VIP",
+    "month": "mes",
+    "forever": "siempre",
+    "mostPopular": "Mas Popular",
+    "getStartedFree": "Comenzar Gratis",
+    "startPremium": "Empezar Premium",
+    "goVip": "Ser VIP"
+  },
+  "safety": {
+    "title": "Tu seguridad es nuestra promesa",
+    "subtitle": "Cada funcion disenada pensando en tu bienestar."
+  },
+  "chat": {
+    "messages": "Mensajes",
+    "searchConversations": "Buscar conversaciones...",
+    "typeMessage": "Escribe un mensaje...",
+    "online": "En linea",
+    "offline": "Fuera de linea"
+  },
+  "footer": {
+    "tagline": "No estas solo. Encuentra conexiones genuinas con personas que te entienden.",
+    "platform": "Plataforma",
+    "support": "Soporte",
+    "connect": "Conectar",
+    "copyright": "© 2025 Friendzy. Haciendo el mundo menos solitario, una amistad a la vez."
+  },
+  "settings": {
+    "title": "Configuracion",
+    "language": "Idioma",
+    "notifications": "Notificaciones",
+    "privacy": "Privacidad",
+    "account": "Cuenta"
+  },
+  "profile": {
+    "title": "Mi Perfil",
+    "editProfile": "Editar Perfil",
+    "mood": "Estado de Animo",
+    "interests": "Intereses",
+    "about": "Sobre Mi"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Algo salio mal",
+    "retry": "Intentar de nuevo",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "back": "Atras",
+    "next": "Siguiente",
+    "submit": "Enviar",
+    "close": "Cerrar",
+    "search": "Buscar",
+    "noResults": "No se encontraron resultados",
+    "seeAll": "Ver Todo"
+  }
+}

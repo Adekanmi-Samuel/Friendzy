@@ -2,13 +2,31 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import AuthModal from './AuthModal';
+import LanguageSelector from './LanguageSelector';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const location = useLocation();
   const isHome = location.pathname === '/';
+
+  useEffect(() => {
+    const checkAuth = () => {
+      setIsLoggedIn(localStorage.getItem('friendzy_logged_in') === 'true');
+    };
+    checkAuth();
+    window.addEventListener('storage', checkAuth);
+    return () => window.removeEventListener('storage', checkAuth);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('friendzy_logged_in');
+    setIsLoggedIn(false);
+    window.dispatchEvent(new Event('storage'));
+    window.location.href = '/';
+  };
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -78,18 +96,38 @@ export default function Navbar() {
                   {link.label}
                 </Link>
               ))}
-              <button
-                onClick={() => setShowAuth(true)}
-                className="ml-3 px-5 py-2 rounded-xl text-sm font-semibold font-body transition-all cursor-pointer text-slate hover:text-ink hover:bg-pebble/20"
-              >
-                Sign In
-              </button>
-              <Link
-                to="/onboarding"
-                className="ml-3 px-5 py-2 rounded-xl text-sm font-semibold font-body transition-all cursor-pointer bg-amber text-white hover:bg-amber-light"
-              >
-                Get Started
-              </Link>
+              <LanguageSelector compact />
+              {!isLoggedIn ? (
+                <>
+                  <button
+                    onClick={() => setShowAuth(true)}
+                    className="ml-3 px-5 py-2 rounded-xl text-sm font-semibold font-body transition-all cursor-pointer text-slate hover:text-ink hover:bg-pebble/20"
+                  >
+                    Sign In
+                  </button>
+                  <Link
+                    to="/onboarding"
+                    className="ml-3 px-5 py-2 rounded-xl text-sm font-semibold font-body transition-all cursor-pointer bg-amber text-white hover:bg-amber-light"
+                  >
+                    Get Started
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link
+                    to="/profile"
+                    className="ml-3 px-5 py-2 rounded-xl text-sm font-semibold font-body transition-all cursor-pointer text-slate hover:text-ink hover:bg-pebble/20"
+                  >
+                    Profile
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="ml-3 px-5 py-2 rounded-xl text-sm font-semibold font-body transition-all cursor-pointer bg-pebble text-ink hover:bg-slate/20"
+                  >
+                    Log Out
+                  </button>
+                </>
+              )}
             </div>
 
             {/* Mobile Toggle */}
@@ -106,6 +144,9 @@ export default function Navbar() {
       {/* Mobile Menu */}
       {isOpen && (
         <div className="md:hidden mx-4 mt-2 rounded-xl bg-white border border-pebble p-4 space-y-1">
+          <div className="px-4 py-2">
+            <LanguageSelector />
+          </div>
           {navLinks.map(link => (
             <Link
               key={link.to}
@@ -120,19 +161,39 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
-          <button
-            onClick={() => { setIsOpen(false); setShowAuth(true); }}
-            className="block w-full px-4 py-2.5 rounded-xl text-sm font-semibold font-body text-ink hover:bg-pebble/20 text-center mt-2 cursor-pointer"
-          >
-            Sign In
-          </button>
-          <Link
-            to="/onboarding"
-            onClick={() => setIsOpen(false)}
-            className="block px-4 py-2.5 rounded-xl text-sm font-semibold font-body bg-amber text-white text-center"
-          >
-            Get Started
-          </Link>
+          {!isLoggedIn ? (
+            <>
+              <button
+                onClick={() => { setIsOpen(false); setShowAuth(true); }}
+                className="block w-full px-4 py-2.5 rounded-xl text-sm font-semibold font-body text-ink hover:bg-pebble/20 text-center mt-2 cursor-pointer"
+              >
+                Sign In
+              </button>
+              <Link
+                to="/onboarding"
+                onClick={() => setIsOpen(false)}
+                className="block px-4 py-2.5 rounded-xl text-sm font-semibold font-body bg-amber text-white text-center mt-2"
+              >
+                Get Started
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/profile"
+                onClick={() => setIsOpen(false)}
+                className="block px-4 py-2.5 rounded-xl text-sm font-medium font-body text-ink hover:bg-pebble/20 mt-2"
+              >
+                Profile
+              </Link>
+              <button
+                onClick={() => { setIsOpen(false); handleLogout(); }}
+                className="block w-full px-4 py-2.5 rounded-xl text-sm font-semibold font-body bg-pebble text-ink text-center mt-2 cursor-pointer"
+              >
+                Log Out
+              </button>
+            </>
+          )}
         </div>
       )}
 

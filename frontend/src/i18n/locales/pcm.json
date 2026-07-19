@@ -1,0 +1,6 @@
+{
+  "nav": { "dashboard": "Dashboard", "safety": "Safety", "pricing": "Price", "signIn": "Sign In", "getStarted": "Start", "profile": "Profile", "logOut": "Log Out" },
+  "hero": { "title": "Share coffee with person wey understand you.", "subtitle": "You no dey alone. Friendzy connect you with real people for friendship.", "cta": "Find Your People", "secondary": "How E Work" },
+  "auth": { "signIn": "Sign In", "createAccount": "Create Account", "email": "Email", "password": "Password", "orEmail": "or continue with email" },
+  "common": { "loading": "E dey load...", "error": "Somtin no go right", "retry": "Try again", "save": "Save", "cancel": "Cancel", "confirm": "Confirm", "close": "Close" }
+}
