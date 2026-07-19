@@ -109,7 +109,7 @@ export default function VerificationForm({ onSubmit, currentStatus = 'not_submit
             disabled={!fullName || !dob}
             className={`w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer ${
               fullName && dob
-                ? 'bg-ink text-white hover:bg-ink-light'
+                ? 'bg-amber text-white hover:bg-amber-light'
                 : 'bg-pebble/30 text-slate/50 cursor-not-allowed'
             }`}
           >
@@ -124,7 +124,7 @@ export default function VerificationForm({ onSubmit, currentStatus = 'not_submit
             <Upload size={32} className="text-slate mx-auto mb-3" />
             <p className="text-sm font-medium text-ink mb-1">Upload your ID</p>
             <p className="text-xs text-slate">JPG, PNG or PDF. Max 5MB.</p>
-            <button className="mt-4 px-6 py-2.5 rounded-xl bg-ink text-white text-sm font-medium hover:bg-ink-light transition-colors cursor-pointer">
+            <button className="mt-4 px-6 py-2.5 rounded-xl bg-amber text-white text-sm font-medium hover:bg-amber-light transition-colors cursor-pointer">
               Choose File
             </button>
           </div>

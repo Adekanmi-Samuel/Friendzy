@@ -73,7 +73,7 @@ export default function Onboarding() {
       <div className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-xl border-b border-pebble/50">
         <div className="max-w-3xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-ink flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full bg-amber/10 flex items-center justify-center">
               <Heart size={16} className="text-amber" fill="currentColor" />
             </div>
             <span className="text-lg font-semibold text-ink" style={{ fontFamily: 'var(--font-display)' }}>Friendzy</span>
@@ -149,8 +149,8 @@ export default function Onboarding() {
                         <button key={interest} onClick={() => toggleInterest(interest)}
                           className={`px-4 py-2 rounded-full text-sm font-medium transition-all cursor-pointer ${
                             selectedInterests.includes(interest)
-                              ? 'bg-ink text-white'
-                              : 'bg-white border border-pebble text-slate hover:border-ink/30'
+                              ? 'bg-amber text-white'
+                              : 'bg-white border border-pebble text-slate hover:border-amber/30'
                           }`}>
                           {selectedInterests.includes(interest) && <span className="mr-1">&#10003;</span>}
                           {interest}
@@ -171,8 +171,8 @@ export default function Onboarding() {
                   <button key={trait} onClick={() => toggleTrait(trait)}
                     className={`px-5 py-3 rounded-2xl text-sm font-medium transition-all cursor-pointer ${
                       selectedTraits.includes(trait)
-                        ? 'bg-ink text-white'
-                        : 'bg-white border border-pebble text-slate hover:border-ink/30'
+                        ? 'bg-amber text-white'
+                        : 'bg-white border border-pebble text-slate hover:border-amber/30'
                     }`}>
                     {selectedTraits.includes(trait) && <span className="mr-1.5"><Check size={14} className="inline" /></span>}
                     {trait}
@@ -244,7 +244,7 @@ export default function Onboarding() {
 
           {currentStep < steps.length - 1 ? (
             <button onClick={goNext}
-              className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-ink text-white text-sm font-semibold hover:bg-ink-light transition-colors cursor-pointer">
+              className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-amber text-white text-sm font-semibold hover:bg-amber-light transition-colors cursor-pointer">
               Continue <ArrowRight size={16} />
             </button>
           ) : (

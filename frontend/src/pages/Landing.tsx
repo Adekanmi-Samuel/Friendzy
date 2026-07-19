@@ -3,6 +3,7 @@ import { Heart, Shield, Globe, MessageCircle, ArrowRight, Users, Star, Compass, 
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import AuthModal from '../components/AuthModal';
 import ConnectionArcs from '../components/ConnectionArcs';
 import { FadeUp } from '../lib/animate';
 import ParallaxSection from '../components/ParallaxSection';
@@ -29,7 +30,7 @@ const testimonials = [
   { name: 'Marcus', location: 'Toronto, Canada', text: 'The compatibility scores are surprisingly accurate. My top matches feel like people I have known for years. This actually works.' },
 ];
 
-function ParallaxHero() {
+function ParallaxHero({ onOpenAuth }: { onOpenAuth: () => void }) {
   const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
@@ -121,13 +122,13 @@ function ParallaxHero() {
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
           <MagneticButton strength={0.2}>
-            <Link
-              to="/onboarding"
-              className="group px-8 py-4 rounded-xl bg-amber text-white font-semibold text-lg flex items-center gap-2 hover:bg-amber-light transition-all duration-300"
+            <button
+              onClick={onOpenAuth}
+              className="group px-8 py-4 rounded-xl bg-amber text-white font-semibold text-lg flex items-center gap-2 hover:bg-amber-light transition-all duration-300 cursor-pointer"
             >
               Find Your People
               <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-            </Link>
+            </button>
           </MagneticButton>
           <MagneticButton strength={0.2}>
             <Link
@@ -161,11 +162,13 @@ function ParallaxHero() {
 }
 
 export default function Landing() {
+  const [showAuth, setShowAuth] = useState(false);
+
   return (
     <div className="min-h-screen">
       <Navbar />
 
-      <ParallaxHero />
+      <ParallaxHero onOpenAuth={() => setShowAuth(true)} />
 
       {/* How It Works */}
       <section className="py-28 bg-white relative">
@@ -358,6 +361,8 @@ export default function Landing() {
       </section>
 
       <Footer />
+
+      <AuthModal isOpen={showAuth} onClose={() => setShowAuth(false)} />
     </div>
   );
 }

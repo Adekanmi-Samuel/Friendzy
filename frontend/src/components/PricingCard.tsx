@@ -18,7 +18,7 @@ export default function PricingCard({ tier, price, period, features, popular, ct
     <FadeUp delay={delay}>
       <div className={`relative rounded-2xl p-7 ${
         popular
-          ? 'bg-ink text-white border-2 border-amber'
+          ? 'bg-amber/5 text-ink border-2 border-amber'
           : 'bg-white border border-pebble'
       }`}>
         {popular && (
@@ -50,11 +50,7 @@ export default function PricingCard({ tier, price, period, features, popular, ct
         </ul>
 
         <button
-          className={`w-full py-3.5 rounded-xl text-sm font-semibold font-body transition-all cursor-pointer ${
-            popular
-              ? 'bg-amber text-white hover:bg-amber-light'
-              : 'bg-ink text-white hover:bg-ink-light'
-          }`}
+          className="w-full py-3.5 rounded-xl text-sm font-semibold font-body transition-all cursor-pointer bg-amber text-white hover:bg-amber-light"
         >
           {cta}
         </button>

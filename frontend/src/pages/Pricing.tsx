@@ -258,7 +258,7 @@ export default function Pricing() {
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                   <Link
                     to="/onboarding"
-                    className="px-8 py-3.5 rounded-2xl bg-ink text-white font-semibold flex items-center gap-2 hover:bg-ink-light transition-colors"
+                    className="px-8 py-3.5 rounded-2xl bg-amber text-white font-semibold flex items-center gap-2 hover:bg-amber-light transition-colors"
                   >
                     Get Started Free <ArrowRight size={16} />
                   </Link>

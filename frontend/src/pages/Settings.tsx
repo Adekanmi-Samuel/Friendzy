@@ -83,7 +83,7 @@ export default function Settings() {
                     onClick={() => setActiveSection(section.id)}
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all cursor-pointer ${
                       activeSection === section.id
-                        ? 'bg-ink text-white'
+                        ? 'bg-amber/10 text-amber'
                         : 'text-slate hover:bg-pebble/20 hover:text-ink'
                     }`}
                   >
@@ -187,7 +187,7 @@ export default function Settings() {
                           className="w-full px-4 py-3 rounded-2xl bg-pebble/20 text-sm text-ink placeholder:text-slate/50 focus:outline-none focus:ring-2 focus:ring-amber/30"
                         />
                       </div>
-                        <button className="px-5 py-2.5 rounded-xl bg-ink text-white text-sm font-medium hover:bg-ink-light transition-colors cursor-pointer">
+                        <button className="px-5 py-2.5 rounded-xl bg-amber text-white text-sm font-medium hover:bg-amber-light transition-colors cursor-pointer">
                           Update Password
                         </button>
                     </div>
@@ -385,7 +385,7 @@ export default function Settings() {
                               onClick={() => setTheme(t)}
                               className={`p-4 rounded-2xl text-center transition-all cursor-pointer ${
                                 theme === t
-                                  ? 'bg-ink text-white shadow-lg'
+                                  ? 'bg-amber/10 text-amber shadow-lg'
                                   : 'bg-pebble/20 text-slate hover:bg-pebble/30'
                               }`}
                             >
@@ -406,7 +406,7 @@ export default function Settings() {
                               onClick={() => setFontSize(size)}
                               className={`p-4 rounded-2xl text-center transition-all cursor-pointer ${
                                 fontSize === size
-                                  ? 'bg-ink text-white shadow-lg'
+                                  ? 'bg-amber/10 text-amber shadow-lg'
                                   : 'bg-pebble/20 text-slate hover:bg-pebble/30'
                               }`}
                             >
@@ -445,7 +445,7 @@ export default function Settings() {
             {/* Save Button */}
             <FadeUp delay={0.2}>
               <div className="mt-6 flex justify-end">
-                  <button className="px-6 py-3 rounded-2xl bg-ink text-white text-sm font-semibold hover:bg-ink-light transition-colors cursor-pointer">
+                  <button className="px-6 py-3 rounded-2xl bg-amber text-white text-sm font-semibold hover:bg-amber-light transition-colors cursor-pointer">
                     Save Changes
                   </button>
               </div>

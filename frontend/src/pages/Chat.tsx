@@ -79,7 +79,7 @@ export default function Chat() {
                 }`}
               >
                 <div className="relative">
-                  <div className="w-11 h-11 rounded-full bg-ink flex items-center justify-center text-white font-semibold">
+                  <div className="w-11 h-11 rounded-full bg-amber/10 flex items-center justify-center text-amber font-semibold">
                     {contact.name[0]}
                   </div>
                   <div className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-white ${
@@ -115,7 +115,7 @@ export default function Chat() {
               >
                 <ArrowLeft size={18} />
               </button>
-              <div className="w-10 h-10 rounded-full bg-ink flex items-center justify-center text-white font-semibold text-sm">
+              <div className="w-10 h-10 rounded-full bg-amber/10 flex items-center justify-center text-amber font-semibold text-sm">
                 {contacts[selectedContact]?.name[0]}
               </div>
               <div>
@@ -202,7 +202,7 @@ export default function Chat() {
                 disabled={!message.trim()}
                 className={`p-2.5 rounded-xl transition-colors cursor-pointer ${
                   message.trim()
-                    ? 'bg-ink text-white hover:bg-ink-light'
+                    ? 'bg-amber text-white hover:bg-amber-light'
                     : 'bg-pebble/30 text-slate/30 cursor-not-allowed'
                 }`}
               >

@@ -24,7 +24,7 @@ export default function MatchCard({
         {/* Image Section */}
         <div className="relative h-72 overflow-hidden">
           <img src={image} alt={name} className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
           <div className="absolute top-4 right-4">
             <SafeSpaceBadge size="sm" />
           </div>
@@ -67,7 +67,7 @@ export default function MatchCard({
             </button>
             <button
               onClick={onChat}
-              className="flex-1 py-3 rounded-xl bg-ink text-white text-sm font-semibold font-body flex items-center justify-center gap-2 hover:bg-ink-light transition-colors cursor-pointer"
+              className="flex-1 py-3 rounded-xl bg-amber text-white text-sm font-semibold font-body flex items-center justify-center gap-2 hover:bg-amber-light transition-colors cursor-pointer"
             >
               <MessageCircle size={16} /> Say Hello
             </button>

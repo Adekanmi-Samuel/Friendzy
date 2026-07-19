@@ -87,11 +87,7 @@ export default function GroupCard({ group, onJoin, onLeave, isMember }: GroupCar
             <button
               onClick={() => onJoin?.(group.id)}
               disabled={group.status === 'full'}
-              className={`w-full py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                group.status === 'full'
-                  ? 'bg-pebble/30 text-slate/50 cursor-not-allowed'
-                  : 'bg-ink text-white hover:bg-ink-light'
-              }`}
+              className="w-full py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer bg-amber text-white hover:bg-amber-light"
             >
               <Users size={14} />
               {group.status === 'full' ? 'Group Full' : 'Join Group'}

@@ -1,10 +1,12 @@
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import AuthModal from './AuthModal';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
   const location = useLocation();
   const isHome = location.pathname === '/';
 
@@ -76,6 +78,12 @@ export default function Navbar() {
                   {link.label}
                 </Link>
               ))}
+              <button
+                onClick={() => setShowAuth(true)}
+                className="ml-3 px-5 py-2 rounded-xl text-sm font-semibold font-body transition-all cursor-pointer text-slate hover:text-ink hover:bg-pebble/20"
+              >
+                Sign In
+              </button>
               <Link
                 to="/onboarding"
                 className="ml-3 px-5 py-2 rounded-xl text-sm font-semibold font-body transition-all cursor-pointer bg-amber text-white hover:bg-amber-light"
@@ -112,15 +120,23 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
+          <button
+            onClick={() => { setIsOpen(false); setShowAuth(true); }}
+            className="block w-full px-4 py-2.5 rounded-xl text-sm font-semibold font-body text-ink hover:bg-pebble/20 text-center mt-2 cursor-pointer"
+          >
+            Sign In
+          </button>
           <Link
             to="/onboarding"
             onClick={() => setIsOpen(false)}
-            className="block px-4 py-2.5 rounded-xl text-sm font-semibold font-body bg-amber text-white text-center mt-2"
+            className="block px-4 py-2.5 rounded-xl text-sm font-semibold font-body bg-amber text-white text-center"
           >
             Get Started
           </Link>
         </div>
       )}
+
+      <AuthModal isOpen={showAuth} onClose={() => setShowAuth(false)} />
     </nav>
   );
 }

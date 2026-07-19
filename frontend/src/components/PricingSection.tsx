@@ -69,7 +69,7 @@ export default function PricingSection({ plans = defaultPlans }: { plans?: Plan[
         <FadeUp key={plan.tier} delay={i * 0.1}>
           <div className={`relative rounded-2xl p-7 ${
             plan.popular
-              ? 'bg-ink text-white border-2 border-amber'
+              ? 'bg-amber/5 text-ink border-2 border-amber'
               : 'bg-white border border-pebble'
           }`}>
             {plan.popular && (
@@ -105,11 +105,7 @@ export default function PricingSection({ plans = defaultPlans }: { plans?: Plan[
               <button
                 onClick={() => handleCheckout(plan)}
                 disabled={loading === plan.tier}
-                className={`w-full py-3.5 rounded-xl text-sm font-semibold font-body transition-all cursor-pointer ${
-                  plan.popular
-                    ? 'bg-amber text-white hover:bg-amber-light'
-                    : 'bg-ink text-white hover:bg-ink-light'
-                } ${loading === plan.tier ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className="w-full py-3.5 rounded-xl text-sm font-semibold font-body transition-all cursor-pointer bg-amber text-white hover:bg-amber-light"
               >
                 {loading === plan.tier ? 'Loading...' : plan.cta}
               </button>

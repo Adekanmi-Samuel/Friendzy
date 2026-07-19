@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ErrorBoundary from './components/ErrorBoundary';
 import CursorGlow from './components/CursorGlow';
 import ScrollProgress from './components/ScrollProgress';
+import { ToastProvider } from './components/Toast';
+import CookieConsent from './components/CookieConsent';
 import { initSmoothScroll, destroySmoothScroll } from './lib/smooth-scroll';
 
 /* ─── Lazy-loaded pages ─── */
@@ -14,6 +16,9 @@ const Profile = lazy(() => import('./pages/Profile'));
 const Safety = lazy(() => import('./pages/Safety'));
 const Pricing = lazy(() => import('./pages/Pricing'));
 const Settings = lazy(() => import('./pages/Settings'));
+const Terms = lazy(() => import('./pages/Terms'));
+const Privacy = lazy(() => import('./pages/Privacy'));
+const Support = lazy(() => import('./pages/Support'));
 
 /* ─── Loading Spinner ─── */
 function PageLoader() {
@@ -51,7 +56,7 @@ function NotFound() {
         </p>
         <a
           href="/"
-          className="inline-block mt-2 px-5 py-2.5 rounded-lg bg-ink text-white text-sm font-medium hover:bg-ink-light transition-colors"
+          className="inline-block mt-2 px-5 py-2.5 rounded-lg bg-amber text-white text-sm font-medium hover:bg-amber-light transition-colors"
         >
           Back to home
         </a>
@@ -68,23 +73,29 @@ export default function App() {
 
   return (
     <ErrorBoundary>
-      <CursorGlow />
-      <ScrollProgress />
-      <BrowserRouter>
-        <Suspense fallback={<PageLoader />}>
-          <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route path="/onboarding" element={<Onboarding />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/chat" element={<Chat />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/safety" element={<Safety />} />
-            <Route path="/pricing" element={<Pricing />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
-      </BrowserRouter>
+      <ToastProvider>
+        <CursorGlow />
+        <ScrollProgress />
+        <BrowserRouter>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              <Route path="/" element={<Landing />} />
+              <Route path="/onboarding" element={<Onboarding />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/chat" element={<Chat />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/safety" element={<Safety />} />
+              <Route path="/pricing" element={<Pricing />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/support" element={<Support />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+            <CookieConsent />
+          </Suspense>
+        </BrowserRouter>
+      </ToastProvider>
     </ErrorBoundary>
   );
 }

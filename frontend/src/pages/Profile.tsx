@@ -69,10 +69,10 @@ export default function Profile() {
             <div className="bg-white px-6 md:px-8 pb-8 relative border border-pebble border-t-0 rounded-b-3xl">
               <div className="flex flex-col md:flex-row md:items-end gap-4 -mt-12 md:-mt-16">
                 <div className="relative">
-                  <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-ink flex items-center justify-center text-white text-3xl md:text-4xl font-bold border-4 border-white" style={{ fontFamily: 'var(--font-display)' }}>
+                  <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-amber/10 flex items-center justify-center text-amber text-3xl md:text-4xl font-bold border-4 border-white" style={{ fontFamily: 'var(--font-display)' }}>
                     {profileData.name[0]}
                   </div>
-                  <button className="absolute bottom-1 right-1 w-8 h-8 rounded-full bg-ink text-white flex items-center justify-center hover:bg-ink-light transition-colors cursor-pointer">
+                  <button className="absolute bottom-1 right-1 w-8 h-8 rounded-full bg-amber text-white flex items-center justify-center hover:bg-amber-light transition-colors cursor-pointer">
                     <Camera size={14} />
                   </button>
                 </div>
@@ -92,7 +92,7 @@ export default function Profile() {
 
                 <div className="flex items-center gap-2 md:pb-1">
                   <button onClick={() => setIsEditing(!isEditing)}
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-ink text-white text-sm font-medium hover:bg-ink-light transition-colors cursor-pointer">
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber text-white text-sm font-medium hover:bg-amber-light transition-colors cursor-pointer">
                     <Edit3 size={14} /> {isEditing ? 'Save' : 'Edit Profile'}
                   </button>
                   <button className="p-2 rounded-xl bg-white border border-pebble text-slate hover:text-ink transition-colors cursor-pointer">
@@ -164,7 +164,7 @@ export default function Profile() {
                 <div className="space-y-3">
                   {recentFriends.map(friend => (
                     <div key={friend.name} className="flex items-center gap-3 p-3 rounded-2xl hover:bg-pebble/20 transition-colors">
-                      <div className="w-10 h-10 rounded-full bg-ink flex items-center justify-center text-white font-semibold text-sm">
+                      <div className="w-10 h-10 rounded-full bg-amber/10 flex items-center justify-center text-amber font-semibold text-sm">
                         {friend.name[0]}
                       </div>
                       <div className="flex-1">
