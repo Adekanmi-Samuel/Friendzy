@@ -1,5 +1,5 @@
 // In dev: hit local backend. In prod: use Vercel proxy or full URL
-const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:3001/api' : '/api');
+const API_BASE = import.meta.env.DEV ? 'http://localhost:3001/api' : '/api';
 
 class ApiClient {
   private token: string | null = null;
