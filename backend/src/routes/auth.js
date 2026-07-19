@@ -8,6 +8,29 @@ const router = Router();
 // In-memory user store (replace with DB in production)
 const users = new Map();
 
+// Pre-seed demo users for testing
+const demoUsers = [
+  { email: 'sofia@example.com', name: 'Sofia R.', location: 'São Paulo, Brazil', interests: ['Cooking', 'Music', 'Hiking'], bio: 'Love trying new recipes!', trustScore: 87, verified: true },
+  { email: 'kwame@example.com', name: 'Kwame A.', location: 'Accra, Ghana', interests: ['Tech', 'Photography', 'Jazz'], bio: 'Software developer by day.', trustScore: 91, verified: true },
+  { email: 'mei@example.com', name: 'Mei L.', location: 'Singapore', interests: ['Art', 'Yoga', 'Travel'], bio: 'Finding beauty in everyday moments.', trustScore: 72, verified: false },
+  { email: 'admin@friendzy.com', name: 'Admin', location: 'Global', interests: [], bio: 'Platform administrator', trustScore: 100, verified: true, premium: true },
+];
+
+demoUsers.forEach(demo => {
+  const user = {
+    id: `demo-${demo.email.split('@')[0]}`,
+    ...demo,
+    password: 'password123',
+    age: 28,
+    gender: 'MALE',
+    language: 'en',
+    region: 'NG',
+    premium: demo.premium || false,
+    createdAt: new Date().toISOString(),
+  };
+  users.set(demo.email, user);
+});
+
 // Register
 router.post('/register', validateRegistration, asyncHandler(async (req, res) => {
   const { name, email, password, location, bio } = req.body;
