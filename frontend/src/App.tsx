@@ -5,6 +5,8 @@ import CursorGlow from './components/CursorGlow';
 import ScrollProgress from './components/ScrollProgress';
 import { ToastProvider } from './components/Toast';
 import CookieConsent from './components/CookieConsent';
+import { AuthProvider } from './contexts/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 import { initSmoothScroll, destroySmoothScroll } from './lib/smooth-scroll';
 
 /* ─── Lazy-loaded pages ─── */
@@ -77,26 +79,28 @@ export default function App() {
       <ToastProvider>
         <CursorGlow />
         <ScrollProgress />
+        <AuthProvider>
         <BrowserRouter>
           <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/" element={<Landing />} />
               <Route path="/onboarding" element={<Onboarding />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/chat" element={<Chat />} />
-              <Route path="/profile" element={<Profile />} />
               <Route path="/safety" element={<Safety />} />
               <Route path="/pricing" element={<Pricing />} />
-              <Route path="/settings" element={<Settings />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/support" element={<Support />} />
+              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
+              <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+              <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
               <Route path="/admin" element={<Admin />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
             <CookieConsent />
           </Suspense>
         </BrowserRouter>
+        </AuthProvider>
       </ToastProvider>
     </ErrorBoundary>
   );
