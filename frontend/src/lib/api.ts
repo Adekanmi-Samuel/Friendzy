@@ -1,5 +1,10 @@
-// In dev: hit local backend. In prod: use Vercel proxy or full URL
-const API_BASE = import.meta.env.DEV ? 'http://localhost:3001/api' : '/api';
+// In dev: hit local backend. In prod: use VITE_API_URL (Render backend) when set, else same-origin /api.
+const API_BASE = (() => {
+  if (import.meta.env.DEV) return 'http://localhost:3001/api';
+  const env = import.meta.env.VITE_API_URL?.trim();
+  if (!env) return '/api';
+  return env.endsWith('/api') ? env : env.replace(/\/+$/, '') + '/api';
+})();
 
 class ApiClient {
   private token: string | null = null;

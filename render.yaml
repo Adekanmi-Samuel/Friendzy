@@ -3,10 +3,17 @@ services:
     name: friendzy-api
     runtime: node
     rootDir: backend
-    buildCommand: npm install
+    buildCommand: npm install && npx prisma generate
     startCommand: node src/server.js
+    preDeployCommand: npx prisma migrate deploy
     envVars:
       - key: NODE_ENV
         value: production
       - key: FRONTEND_URL
         value: https://friendzy-three.vercel.app
+      # These are injected by Render (secret store / dashboard). Do NOT hardcode values.
+      # sync: false marks them as manual-only, so they must be set in the Render dashboard.
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
