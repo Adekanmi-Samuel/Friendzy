@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../components/Toast';
 import MoodIndicator from '../components/MoodIndicator';
 import RegionToggle from '../components/RegionToggle';
+import { supabase } from '../lib/supabase';
 
 const steps = ['Create Account', 'Your Profile', 'Your Interests', 'Preferences'];
 
@@ -264,13 +265,30 @@ export default function Onboarding() {
                 if (loading) return;
                 setLoading(true);
                 try {
-                  if (!user) {
-                    await register({ name: name || 'Friend', email: email || `user${Date.now()}@friendzy.com`, password: password || 'password123' });
+                  if (!user && email && password) {
+                    await register({ name: name || 'Friend', email, password });
+                    // Store additional profile data in Supabase user metadata
+                    const { data: userData } = await supabase.auth.getUser();
+                    if (userData.user) {
+                      await supabase.auth.updateUser({
+                        data: {
+                          full_name: name || 'Friend',
+                          bio,
+                          interests: selectedInterests,
+                          personality: selectedTraits,
+                          mood,
+                          region,
+                          lookingFor,
+                          age: age ? parseInt(age) : undefined,
+                        },
+                      });
+                    }
                   }
                   toast('Welcome to Friendzy! Finding your people...', 'success');
                   navigate('/dashboard');
                 } catch (err: any) {
                   toast(err.message || 'Something went wrong', 'error');
+                  // Still navigate — account may have been created
                   navigate('/dashboard');
                 } finally {
                   setLoading(false);

@@ -3,28 +3,23 @@ import { Menu, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import AuthModal from './AuthModal';
 import LanguageSelector from './LanguageSelector';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isAuthenticated, logout } = useAuth();
   const location = useLocation();
   const isHome = location.pathname === '/';
 
-  useEffect(() => {
-    const checkAuth = () => {
-      setIsLoggedIn(localStorage.getItem('friendzy_logged_in') === 'true');
-    };
-    checkAuth();
-    window.addEventListener('storage', checkAuth);
-    return () => window.removeEventListener('storage', checkAuth);
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem('friendzy_logged_in');
-    setIsLoggedIn(false);
-    window.dispatchEvent(new Event('storage'));
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch {
+      // ignore — signOut is best-effort
+    }
+    setIsOpen(false);
     window.location.href = '/';
   };
 
@@ -97,7 +92,7 @@ export default function Navbar() {
                 </Link>
               ))}
               <LanguageSelector compact />
-              {!isLoggedIn ? (
+              {!isAuthenticated ? (
                 <>
                   <button
                     onClick={() => setShowAuth(true)}
@@ -134,6 +129,7 @@ export default function Navbar() {
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="md:hidden rounded-xl p-2.5 transition-colors text-ink hover:bg-pebble/20"
+              aria-label={isOpen ? 'Close menu' : 'Open menu'}
             >
               {isOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
@@ -161,7 +157,7 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
-          {!isLoggedIn ? (
+          {!isAuthenticated ? (
             <>
               <button
                 onClick={() => { setIsOpen(false); setShowAuth(true); }}
@@ -187,7 +183,7 @@ export default function Navbar() {
                 Profile
               </Link>
               <button
-                onClick={() => { setIsOpen(false); handleLogout(); }}
+                onClick={handleLogout}
                 className="block w-full px-4 py-2.5 rounded-xl text-sm font-semibold font-body bg-pebble text-ink text-center mt-2 cursor-pointer"
               >
                 Log Out

@@ -1,3 +1,5 @@
+import { supabase } from './supabase';
+
 // In dev: hit local backend. In prod: use VITE_API_URL (Render backend) when set, else same-origin /api.
 const API_BASE = (() => {
   if (import.meta.env.DEV) return 'http://localhost:3001/api';
@@ -7,36 +9,25 @@ const API_BASE = (() => {
 })();
 
 class ApiClient {
-  private token: string | null = null;
-
-  setToken(token: string) {
-    this.token = token;
-    localStorage.setItem('friendzy-token', token);
-  }
-
-  getToken() {
-    if (!this.token) this.token = localStorage.getItem('friendzy-token');
-    return this.token;
-  }
-
-  clearToken() {
-    this.token = null;
-    localStorage.removeItem('friendzy-token');
+  private async getToken(): Promise<string | null> {
+    const { data } = await supabase.auth.getSession();
+    return data.session?.access_token ?? null;
   }
 
   private async request<T>(method: string, path: string, body?: any): Promise<T> {
     const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-    const token = this.getToken();
+    const token = await this.getToken();
     if (token) headers['Authorization'] = `Bearer ${token}`;
 
     let res: Response;
     try {
       res = await fetch(`${API_BASE}${path}`, {
-        method, headers,
+        method,
+        headers,
         body: body ? JSON.stringify(body) : undefined,
       });
-    } catch (fetchError) {
-      throw new Error('Cannot connect to server. Make sure the backend is running on port 3001.');
+    } catch {
+      throw new Error('Cannot connect to server. Make sure the backend is running.');
     }
 
     if (!res.ok) {
@@ -45,21 +36,6 @@ class ApiClient {
     }
     return res.json();
   }
-
-  // Auth
-  async register(data: { name: string; email: string; password: string }) {
-    const r = await this.request<any>('POST', '/auth/register', data);
-    if (r.token) this.setToken(r.token);
-    return r;
-  }
-
-  async login(email: string, password: string) {
-    const r = await this.request<any>('POST', '/auth/login', { email, password });
-    if (r.token) this.setToken(r.token);
-    return r;
-  }
-
-  async getMe() { return this.request<any>('GET', '/auth/me'); }
 
   // Users
   async getUsers(params?: { search?: string; region?: string }) {
@@ -86,14 +62,23 @@ class ApiClient {
   }
 
   // Chat
-  async getConversations() { return this.request<any>('GET', '/chat/conversations'); }
-  async getMessages(chatId: string) { return this.request<any>('GET', `/chat/conversations/${chatId}/messages`); }
+  async getConversations() {
+    return this.request<any>('GET', '/chat/conversations');
+  }
+
+  async getMessages(chatId: string) {
+    return this.request<any>('GET', `/chat/conversations/${chatId}/messages`);
+  }
+
   async sendMessage(chatId: string, text: string) {
     return this.request<any>('POST', `/chat/conversations/${chatId}/messages`, { text });
   }
 
   // Payments
-  async getPricing(region: string) { return this.request<any>('GET', `/payments/pricing/${region}`); }
+  async getPricing(region: string) {
+    return this.request<any>('GET', `/payments/pricing/${region}`);
+  }
+
   async initializePayment(data: { email: string; plan: string; region: string }) {
     return this.request<any>('POST', '/payments/initialize', data);
   }
@@ -102,40 +87,33 @@ class ApiClient {
   async blockUser(userId: string, blockedUserId: string) {
     return this.request<any>('POST', '/moderation/block', { userId, blockedUserId });
   }
+
   async reportUser(data: { reporterId: string; reportedUserId: string; reason: string; description?: string }) {
     return this.request<any>('POST', '/moderation/report', data);
   }
-  async getHotlines(region: string) { return this.request<any>('GET', `/moderation/hotlines/${region}`); }
+
+  async getHotlines(region: string) {
+    return this.request<any>('GET', `/moderation/hotlines/${region}`);
+  }
 
   // Verification
   async submitVerification(data: { userId: string; idType: string; fullName: string; dateOfBirth: string }) {
     return this.request<any>('POST', '/verification/submit', data);
   }
-  async getVerificationStatus(userId: string) { return this.request<any>('GET', `/verification/status/${userId}`); }
+
+  async getVerificationStatus(userId: string) {
+    return this.request<any>('GET', `/verification/status/${userId}`);
+  }
 
   // Groups
   async getGroups(params?: { interest?: string; status?: string }) {
     const q = new URLSearchParams(params as any).toString();
     return this.request<any>('GET', `/groups${q ? '?' + q : ''}`);
   }
+
   async joinGroup(groupId: string, userId: string) {
     return this.request<any>('POST', `/groups/${groupId}/join`, { userId });
   }
-
-  // Admin
-  async adminLogin(email: string, password: string) {
-    return this.request<any>('POST', '/admin/login', { email, password });
-  }
-  async getAdminDashboard() { return this.request<any>('GET', '/admin/dashboard'); }
-  async getAdminUsers(params?: { search?: string }) {
-    const q = new URLSearchParams(params as any).toString();
-    return this.request<any>('GET', `/admin/users${q ? '?' + q : ''}`);
-  }
-  async getAdminReports(params?: { status?: string }) {
-    const q = new URLSearchParams(params as any).toString();
-    return this.request<any>('GET', `/admin/reports${q ? '?' + q : ''}`);
-  }
-  async getAdminAnalytics() { return this.request<any>('GET', '/admin/analytics'); }
 }
 
 export const api = new ApiClient();

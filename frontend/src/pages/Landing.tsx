@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { Heart, Shield, Globe, MessageCircle, ArrowRight, Users, Star, Compass, Handshake } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import { useToast } from '../components/Toast';
+import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import AuthModal from '../components/AuthModal';
@@ -120,20 +118,6 @@ function ParallaxHero({ onOpenAuth }: { onOpenAuth: () => void }) {
 
 export default function Landing() {
   const [showAuth, setShowAuth] = useState(false);
-  const { login } = useAuth();
-  const navigate = useNavigate();
-  const { toast } = useToast();
-
-  // Demo login helper
-  const handleDemoLogin = async () => {
-    try {
-      await login('sofia@example.com', 'password123');
-      navigate('/dashboard');
-    } catch (err) {
-      // Backend might not be running
-      toast('Demo requires backend server on port 3001', 'info');
-    }
-  };
 
   return (
     <div className="min-h-screen">
@@ -322,12 +306,6 @@ export default function Landing() {
                     Get Started Free <ArrowRight size={18} />
                   </Link>
                 </MagneticButton>
-                <button
-                  onClick={handleDemoLogin}
-                  className="mt-4 text-sm text-slate/60 hover:text-amber transition-colors underline underline-offset-2 cursor-pointer"
-                >
-                  Try Demo
-                </button>
               </div>
             </RevealText>
           </ParallaxSection>

@@ -1,10 +1,12 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import { api } from '../lib/api';
+import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
+import { supabase } from '../lib/supabase';
+import type { Session, User as SupabaseUser } from '@supabase/supabase-js';
 
 interface User {
   id: string;
   name: string;
   email: string;
+  avatar_url?: string;
   location?: string;
   bio?: string;
   interests?: string[];
@@ -15,51 +17,132 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
+  session: Session | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (data: { name: string; email: string; password: string }) => Promise<void>;
-  logout: () => void;
+  loginWithProvider: (provider: 'google' | 'facebook' | 'twitter') => Promise<void>;
+  logout: () => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
+  updatePassword: (newPassword: string) => Promise<void>;
   isAuthenticated: boolean;
 }
 
 const AuthContext = createContext<AuthContextType>({
-  user: null, loading: true,
-  login: async () => {}, register: async () => {},
-  logout: () => {}, isAuthenticated: false,
+  user: null,
+  session: null,
+  loading: true,
+  login: async () => {},
+  register: async () => {},
+  loginWithProvider: async () => {},
+  logout: async () => {},
+  resetPassword: async () => {},
+  updatePassword: async () => {},
+  isAuthenticated: false,
 });
 
-export function useAuth() { return useContext(AuthContext); }
+export function useAuth() {
+  return useContext(AuthContext);
+}
+
+function supabaseUserToUser(supabaseUser: SupabaseUser): User {
+  const meta = supabaseUser.user_metadata ?? {};
+  return {
+    id: supabaseUser.id,
+    name: meta.full_name ?? meta.name ?? supabaseUser.email?.split('@')[0] ?? 'User',
+    email: supabaseUser.email ?? '',
+    avatar_url: meta.avatar_url ?? meta.picture,
+    location: meta.location,
+    bio: meta.bio,
+    interests: meta.interests,
+    verified: meta.verified ?? false,
+    premium: meta.premium ?? false,
+    trustScore: meta.trustScore ?? 0,
+  };
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = api.getToken();
-    if (token) {
-      api.getMe()
-        .then(data => setUser(data.user))
-        .catch(() => { api.clearToken(); })
-        .finally(() => setLoading(false));
-    } else {
+    supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
+      setSession(currentSession);
+      setUser(currentSession?.user ? supabaseUserToUser(currentSession.user) : null);
       setLoading(false);
-    }
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, currentSession) => {
+      setSession(currentSession);
+      setUser(currentSession?.user ? supabaseUserToUser(currentSession.user) : null);
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  const login = async (email: string, password: string) => {
-    const r = await api.login(email, password);
-    setUser(r.user);
-  };
+  const login = useCallback(async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+  }, []);
 
-  const register = async (data: { name: string; email: string; password: string }) => {
-    const r = await api.register(data);
-    setUser(r.user);
-  };
+  const register = useCallback(async (data: { name: string; email: string; password: string }) => {
+    const { error } = await supabase.auth.signUp({
+      email: data.email,
+      password: data.password,
+      options: {
+        data: { full_name: data.name },
+        emailRedirectTo: `${window.location.origin}/dashboard`,
+      },
+    });
+    if (error) throw error;
+  }, []);
 
-  const logout = () => { api.clearToken(); setUser(null); };
+  const loginWithProvider = useCallback(async (provider: 'google' | 'facebook' | 'twitter') => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: `${window.location.origin}/dashboard`,
+      },
+    });
+    if (error) throw error;
+  }, []);
+
+  const logout = useCallback(async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
+  }, []);
+
+  const resetPassword = useCallback(async (email: string) => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/settings`,
+    });
+    if (error) throw error;
+  }, []);
+
+  const updatePassword = useCallback(async (newPassword: string) => {
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) throw error;
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, isAuthenticated: !!user }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        session,
+        loading,
+        login,
+        register,
+        loginWithProvider,
+        logout,
+        resetPassword,
+        updatePassword,
+        isAuthenticated: !!session,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
