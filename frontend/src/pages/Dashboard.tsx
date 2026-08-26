@@ -1,67 +1,106 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect, useCallback } from 'react';
 import { Filter, RefreshCw, TrendingUp, Users, MessageCircle, Heart, Sparkles } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import MatchCard from '../components/MatchCard';
 import MoodIndicator from '../components/MoodIndicator';
 import { FadeUp } from '../lib/animate';
-
-const mockMatches = [
-  {
-    name: 'Amara',
-    age: 28,
-    location: 'Lagos, Nigeria',
-    compatibility: 94,
-    interests: ['Art', 'Philosophy', 'Travel', 'Cooking'],
-    bio: 'Creative soul who loves exploring new cultures and having deep conversations over good food.',
-    image: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&h=400&fit=crop',
-  },
-  {
-    name: 'Priya',
-    age: 25,
-    location: 'Mumbai, India',
-    compatibility: 87,
-    interests: ['Meditation', 'Writing', 'Nature', 'Yoga'],
-    bio: 'Introvert who loves quiet mornings, journaling, and deep talks about life.',
-    image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop',
-  },
-  {
-    name: 'Marcus',
-    age: 32,
-    location: 'Toronto, Canada',
-    compatibility: 82,
-    interests: ['Gaming', 'Hiking', 'Music', 'Photography'],
-    bio: 'Tech enthusiast and outdoor lover. The best friendships start with shared adventures.',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop',
-  },
-  {
-    name: 'Yuki',
-    age: 23,
-    location: 'Tokyo, Japan',
-    compatibility: 91,
-    interests: ['Anime', 'Learning Languages', 'Cooking', 'Astronomy'],
-    bio: 'Curious about everything. I love learning new things and sharing them with people.',
-    image: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&h=400&fit=crop',
-  },
-];
-
-const recentActivity = [
-  { name: 'Amara', action: 'accepted your friend request', time: '2 minutes ago' },
-  { name: 'Marcus', action: 'sent you a message', time: '15 minutes ago' },
-  { name: 'Priya', action: 'liked your profile', time: '1 hour ago' },
-];
+import { useAuth } from '../contexts/AuthContext';
+import { supabase } from '../lib/supabase';
 
 export default function Dashboard() {
+  const { user, isAuthenticated } = useAuth();
   const [mood, setMood] = useState<'great' | 'good' | 'okay' | 'low'>('good');
-  const [matches, setMatches] = useState(mockMatches);
+  const [matches, setMatches] = useState<any[]>([]);
   const [showFilters, setShowFilters] = useState(false);
   const [minCompat, setMinCompat] = useState(80);
+  const [loading, setLoading] = useState(true);
+
+  // Load user data and matches on mount
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      loadDashboardData();
+    }
+  }, [isAuthenticated, user]);
+
+  const loadDashboardData = async () => {
+    if (!user) return;
+    setLoading(true);
+    try {
+      // Load user's mood from metadata
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      if (currentUser?.user_metadata?.mood) {
+        setMood(currentUser.user_metadata.mood);
+      }
+
+      // Load matches (using the existing mock for now, but could be replaced with real API)
+      const mockMatches = [
+        {
+          name: 'Amara',
+          age: 28,
+          location: 'Lagos, Nigeria',
+          compatibility: 94,
+          interests: ['Art', 'Philosophy', 'Travel', 'Cooking'],
+          bio: 'Creative soul who loves exploring new cultures and having deep conversations over good food.',
+          image: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&h=400&fit=crop',
+        },
+        {
+          name: 'Priya',
+          age: 25,
+          location: 'Mumbai, India',
+          compatibility: 87,
+          interests: ['Meditation', 'Writing', 'Nature', 'Yoga'],
+          bio: 'Introvert who loves quiet mornings, journaling, and deep talks about life.',
+          image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop',
+        },
+        {
+          name: 'Marcus',
+          age: 32,
+          location: 'Toronto, Canada',
+          compatibility: 82,
+          interests: ['Gaming', 'Hiking', 'Music', 'Photography'],
+          bio: 'Tech enthusiast and outdoor lover. The best friendships start with shared adventures.',
+          image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop',
+        },
+        {
+          name: 'Yuki',
+          age: 23,
+          location: 'Tokyo, Japan',
+          compatibility: 91,
+          interests: ['Anime', 'Learning Languages', 'Cooking', 'Astronomy'],
+          bio: 'Curious about everything. I love learning new things and sharing them with people.',
+          image: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&h=400&fit=crop',
+        },
+      ];
+      setMatches(mockMatches);
+    } catch (err) {
+      console.error('Failed to load dashboard data:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredMatches = matches.filter(m => m.compatibility >= minCompat);
 
-  const handleRefresh = () => {
+  const handleRefresh = useCallback(() => {
     setMatches(prev => [...prev].sort(() => Math.random() - 0.5));
-  };
+  }, []);
+
+  const handleMoodChange = useCallback(async (newMood: 'great' | 'good' | 'okay' | 'low') => {
+    setMood(newMood);
+    try {
+      await supabase.auth.updateUser({ data: { mood: newMood } });
+    } catch (err) {
+      console.error('Failed to save mood:', err);
+    }
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-linen flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-pebble border-t-amber rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-linen">
@@ -73,11 +112,11 @@ export default function Dashboard() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
             <div>
               <h1 className="text-3xl md:text-4xl font-bold text-ink mb-2" style={{ fontFamily: 'var(--font-display)' }}>
-                Welcome back
+                Welcome back, {user?.name || 'Friend'}
               </h1>
               <p className="text-slate">How are you feeling today?</p>
             </div>
-            <MoodIndicator selected={mood} onSelect={setMood} />
+            <MoodIndicator selected={mood} onSelect={handleMoodChange} />
           </div>
         </FadeUp>
 
@@ -112,7 +151,7 @@ export default function Dashboard() {
                   Your Top Matches
                 </h2>
                 <div className="flex items-center gap-2">
-                  <button 
+                  <button
                     onClick={() => setShowFilters(!showFilters)}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-pebble text-sm transition-all cursor-pointer ${showFilters ? 'bg-amber/10 text-amber' : 'bg-white text-slate hover:bg-linen'}`}>
                     <Filter size={14} /> Filter
@@ -131,10 +170,10 @@ export default function Dashboard() {
               <FadeUp>
                 <div className="mb-6 p-4 rounded-2xl bg-white border border-pebble flex items-center gap-4">
                   <span className="text-sm font-medium text-ink">Minimum Compatibility: {minCompat}%</span>
-                  <input 
-                    type="range" 
-                    min="50" max="100" 
-                    value={minCompat} 
+                  <input
+                    type="range"
+                    min="50" max="100"
+                    value={minCompat}
                     onChange={e => setMinCompat(Number(e.target.value))}
                     className="flex-1 accent-amber"
                   />
@@ -161,12 +200,11 @@ export default function Dashboard() {
 
             <FadeUp delay={0.6}>
               <div className="mt-8 text-center">
-                <Link
-                  to="/onboarding"
+                <button
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-amber/10 text-amber font-medium text-sm hover:bg-amber/20 transition-colors"
                 >
                   <Sparkles size={16} /> Update Preferences for Better Matches
-                </Link>
+                </button>
               </div>
             </FadeUp>
           </div>
@@ -180,7 +218,11 @@ export default function Dashboard() {
                   Recent Activity
                 </h3>
                 <div className="space-y-4">
-                  {recentActivity.map((activity, i) => (
+                  {[
+                    { name: 'Amara', action: 'accepted your friend request', time: '2 minutes ago' },
+                    { name: 'Marcus', action: 'sent you a message', time: '15 minutes ago' },
+                    { name: 'Priya', action: 'liked your profile', time: '1 hour ago' },
+                  ].map((activity, i) => (
                     <div key={i} className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-amber/10 flex items-center justify-center text-amber font-semibold text-sm flex-shrink-0">
                         {activity.name[0]}
@@ -209,16 +251,16 @@ export default function Dashboard() {
                     { to: '/chat', label: 'Start a Conversation', icon: MessageCircle },
                     { to: '/profile', label: 'Edit Your Profile', icon: Heart },
                     { to: '/safety', label: 'Safety Resources', icon: Users },
-                    { to: '/settings', label: 'Account Settings', icon: RefreshCw },
+                    { to: '/settings', label: 'Account Settings', icon: Sparkles },
                   ].map(action => (
-                    <Link
+                    <a
                       key={action.to}
-                      to={action.to}
+                      href={action.to}
                       className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate hover:text-ink hover:bg-pebble/20 transition-all"
                     >
                       <action.icon size={16} />
                       {action.label}
-                    </Link>
+                    </a>
                   ))}
                 </div>
               </div>

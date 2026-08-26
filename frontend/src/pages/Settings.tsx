@@ -1,9 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, User, Bell, Shield, Globe, Palette, LogOut, ChevronRight, Eye, EyeOff, Lock, Smartphone, Mail, Trash2 } from 'lucide-react';
+import { ArrowLeft, User, Bell, Shield, Globe, Palette, LogOut, ChevronRight, Eye, EyeOff, Lock, Smartphone, Mail, Trash2, Loader2 } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import RegionToggle from '../components/RegionToggle';
 import { FadeUp } from '../lib/animate';
+import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../components/Toast';
+import { supabase } from '../lib/supabase';
 
 type Section = 'account' | 'notifications' | 'privacy' | 'language' | 'appearance';
 
@@ -16,15 +19,21 @@ const sections: { id: Section; label: string; icon: typeof User; description: st
 ];
 
 export default function Settings() {
+  const { user, updateProfile, logout, updatePassword } = useAuth();
+  const { toast } = useToast();
   const [activeSection, setActiveSection] = useState<Section>('account');
   const [showPassword, setShowPassword] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-  // Account settings
-  const [displayName, setDisplayName] = useState('Alex');
-  const [email, setEmail] = useState('alex@example.com');
-  const [phone, setPhone] = useState('+1 (555) 123-4567');
+  // Account
+  const [displayName, setDisplayName] = useState(user?.name || '');
+  const [email, setEmail] = useState(user?.email || '');
 
-  // Notification settings
+  // Password
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  // Notification settings (stored locally for now)
   const [emailNotifs, setEmailNotifs] = useState(true);
   const [pushNotifs, setPushNotifs] = useState(true);
   const [matchNotifs, setMatchNotifs] = useState(true);
@@ -37,27 +46,61 @@ export default function Settings() {
   const [showReadReceipts, setShowReadReceipts] = useState(true);
   const [allowSearchEngine, setAllowSearchEngine] = useState(false);
   const [shareActivity, setShareActivity] = useState(true);
-  const [twoFactor, setTwoFactor] = useState(true);
 
-  const [theme, setTheme] = useState<'light' | 'dark' | 'auto'>('light');
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [fontSize, setFontSize] = useState<'small' | 'medium' | 'large'>('medium');
 
-  useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else if (theme === 'light') {
-      document.documentElement.classList.remove('dark');
-    } else {
-      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
+  const handleSaveProfile = async () => {
+    setSaving(true);
+    try {
+      await updateProfile({ name: displayName });
+      toast('Profile updated!', 'success');
+    } catch (err: any) {
+      toast(err.message || 'Failed to update profile', 'error');
+    } finally {
+      setSaving(false);
     }
-  }, [theme]);
+  };
 
-  const handleSave = () => {
-    alert('Settings saved successfully!');
+  const handleChangePassword = async () => {
+    if (!newPassword || newPassword.length < 6) {
+      toast('Password must be at least 6 characters', 'error');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast('Passwords do not match', 'error');
+      return;
+    }
+    setSaving(true);
+    try {
+      await updatePassword(newPassword);
+      toast('Password updated successfully!', 'success');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (err: any) {
+      toast(err.message || 'Failed to update password', 'error');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!confirm('Are you sure you want to delete your account? This cannot be undone.')) return;
+    try {
+      // Supabase doesn't have a client-side delete, so we sign out and tell them to contact support
+      toast('Please contact support to delete your account', 'info');
+    } catch (err: any) {
+      toast(err.message || 'Failed', 'error');
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await logout();
+      window.location.href = '/';
+    } catch {
+      window.location.href = '/';
+    }
   };
 
   const ToggleSwitch = ({ enabled, onChange }: { enabled: boolean; onChange: (v: boolean) => void }) => (
@@ -112,13 +155,13 @@ export default function Settings() {
                 ))}
 
                 <div className="pt-2 mt-2 border-t border-pebble/30">
-                  <Link
-                    to="/"
-                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-brick hover:bg-brick/5 transition-all"
+                  <button
+                    onClick={handleSignOut}
+                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-brick hover:bg-brick/5 transition-all w-full cursor-pointer"
                   >
                     <LogOut size={18} />
                     <span className="text-sm font-medium">Sign Out</span>
-                  </Link>
+                  </button>
                 </div>
               </div>
             </div>
@@ -149,22 +192,21 @@ export default function Settings() {
                           <input
                             type="email"
                             value={email}
-                            onChange={e => setEmail(e.target.value)}
-                            className="flex-1 px-4 py-3 rounded-2xl bg-pebble/20 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-amber/30"
+                            disabled
+                            className="flex-1 px-4 py-3 rounded-2xl bg-pebble/20 text-sm text-ink focus:outline-none opacity-60 cursor-not-allowed"
                           />
                           <span className="px-2.5 py-1 rounded-full bg-moss/10 text-moss text-xs font-medium">Verified</span>
                         </div>
                       </div>
-                      <div>
-                        <label className="block text-sm font-medium text-ink mb-2">Phone Number</label>
-                        <input
-                          type="tel"
-                          value={phone}
-                          onChange={e => setPhone(e.target.value)}
-                          className="w-full px-4 py-3 rounded-2xl bg-pebble/20 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-amber/30"
-                        />
-                      </div>
                     </div>
+                    <button
+                      onClick={handleSaveProfile}
+                      disabled={saving}
+                      className="mt-6 px-5 py-2.5 rounded-xl bg-amber text-white text-sm font-medium hover:bg-amber-light transition-colors cursor-pointer disabled:opacity-50 flex items-center gap-2"
+                    >
+                      {saving && <Loader2 size={14} className="animate-spin" />}
+                      Save Profile
+                    </button>
                   </div>
 
                   <div className="glass-card rounded-3xl p-6 md:p-8">
@@ -173,11 +215,13 @@ export default function Settings() {
                     </h2>
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-sm font-medium text-ink mb-2">Current Password</label>
+                        <label className="block text-sm font-medium text-ink mb-2">New Password</label>
                         <div className="relative">
                           <input
                             type={showPassword ? 'text' : 'password'}
-                            placeholder="Enter current password"
+                            value={newPassword}
+                            onChange={e => setNewPassword(e.target.value)}
+                            placeholder="At least 6 characters"
                             className="w-full px-4 py-3 pr-12 rounded-2xl bg-pebble/20 text-sm text-ink placeholder:text-slate/50 focus:outline-none focus:ring-2 focus:ring-amber/30"
                           />
                           <button
@@ -189,24 +233,23 @@ export default function Settings() {
                         </div>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-ink mb-2">New Password</label>
-                        <input
-                          type="password"
-                          placeholder="Enter new password"
-                          className="w-full px-4 py-3 rounded-2xl bg-pebble/20 text-sm text-ink placeholder:text-slate/50 focus:outline-none focus:ring-2 focus:ring-amber/30"
-                        />
-                      </div>
-                      <div>
                         <label className="block text-sm font-medium text-ink mb-2">Confirm New Password</label>
                         <input
                           type="password"
+                          value={confirmPassword}
+                          onChange={e => setConfirmPassword(e.target.value)}
                           placeholder="Confirm new password"
                           className="w-full px-4 py-3 rounded-2xl bg-pebble/20 text-sm text-ink placeholder:text-slate/50 focus:outline-none focus:ring-2 focus:ring-amber/30"
                         />
                       </div>
-                        <button className="px-5 py-2.5 rounded-xl bg-amber text-white text-sm font-medium hover:bg-amber-light transition-colors cursor-pointer">
-                          Update Password
-                        </button>
+                      <button
+                        onClick={handleChangePassword}
+                        disabled={saving || !newPassword}
+                        className="px-5 py-2.5 rounded-xl bg-amber text-white text-sm font-medium hover:bg-amber-light transition-colors cursor-pointer disabled:opacity-50 flex items-center gap-2"
+                      >
+                        {saving && <Loader2 size={14} className="animate-spin" />}
+                        Update Password
+                      </button>
                     </div>
                   </div>
 
@@ -217,9 +260,12 @@ export default function Settings() {
                     <p className="text-sm text-slate mb-4">
                       Permanently delete your account and all associated data. This action cannot be undone.
                     </p>
-                      <button className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brick/10 text-brick text-sm font-medium hover:bg-brick/20 transition-colors cursor-pointer">
-                        <Trash2 size={14} /> Delete Account
-                      </button>
+                    <button
+                      onClick={handleDeleteAccount}
+                      className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brick/10 text-brick text-sm font-medium hover:bg-brick/20 transition-colors cursor-pointer"
+                    >
+                      <Trash2 size={14} /> Delete Account
+                    </button>
                   </div>
                 </div>
               </FadeUp>
@@ -288,16 +334,6 @@ export default function Settings() {
                       Security
                     </h2>
                     <div className="space-y-4">
-                      <div className="flex items-center justify-between py-3 border-b border-pebble/20">
-                        <div className="flex items-center gap-3">
-                          <Lock size={16} className="text-moss" />
-                          <div>
-                            <p className="text-sm font-medium text-ink">Two-Factor Authentication</p>
-                            <p className="text-xs text-slate">Add an extra layer of security to your account</p>
-                          </div>
-                        </div>
-                        <ToggleSwitch enabled={twoFactor} onChange={setTwoFactor} />
-                      </div>
                       <Link to="/safety" className="flex items-center justify-between py-3 hover:bg-pebble/10 rounded-xl transition-colors">
                         <div className="flex items-center gap-3">
                           <Shield size={16} className="text-moss" />
@@ -309,16 +345,6 @@ export default function Settings() {
                         <ChevronRight size={16} className="text-slate" />
                       </Link>
                     </div>
-                  </div>
-
-                  <div className="glass-card rounded-3xl p-6 md:p-8">
-                    <h2 className="text-xl font-semibold text-ink mb-4" style={{ fontFamily: 'var(--font-display)' }}>
-                      Blocked Users
-                    </h2>
-                    <p className="text-sm text-slate mb-4">You have not blocked anyone yet.</p>
-                    <Link to="/safety" className="text-sm text-amber hover:text-amber-light transition-colors">
-                      Learn about safety features
-                    </Link>
                   </div>
                 </div>
               </FadeUp>
@@ -344,43 +370,10 @@ export default function Settings() {
                           <option>Français</option>
                           <option>Português</option>
                           <option>हिन्दी</option>
-                          <option>한국어</option>
-                          <option>日本語</option>
-                          <option>中文</option>
                           <option>العربية</option>
                           <option>Deutsch</option>
-                          <option>Italiano</option>
-                          <option>Tiếng Việt</option>
                         </select>
                       </div>
-                      <div>
-                        <label className="block text-sm font-medium text-ink mb-3">Time Zone</label>
-                        <select className="w-full px-4 py-3 rounded-2xl bg-pebble/20 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-amber/30 cursor-pointer">
-                          <option>UTC-8 (Pacific Time)</option>
-                          <option>UTC-5 (Eastern Time)</option>
-                          <option>UTC+0 (GMT)</option>
-                          <option>UTC+1 (CET)</option>
-                          <option>UTC+5:30 (IST)</option>
-                          <option>UTC+8 (SGT/CST)</option>
-                          <option>UTC+9 (JST)</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="glass-card rounded-3xl p-6 md:p-8">
-                    <h2 className="text-xl font-semibold text-ink mb-4" style={{ fontFamily: 'var(--font-display)' }}>
-                      Supported Languages
-                    </h2>
-                    <p className="text-sm text-slate mb-4">
-                      Friendzy is currently available in 12 languages. We are constantly working to add more.
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {['English', 'Español', 'Français', 'Português', 'हिन्दी', '한국어', '日本語', '中文', 'العربية', 'Deutsch', 'Italiano', 'Tiếng Việt'].map(lang => (
-                        <span key={lang} className="px-3 py-1.5 rounded-full bg-moss/10 text-moss text-xs font-medium">
-                          {lang}
-                        </span>
-                      ))}
                     </div>
                   </div>
                 </div>
@@ -396,21 +389,26 @@ export default function Settings() {
                   <div className="space-y-8">
                     <div>
                       <label className="block text-sm font-medium text-ink mb-3">Theme</label>
-                      <div className="grid grid-cols-3 gap-3">
-                        {(['light', 'dark', 'auto'] as const).map(t => (
-                            <button
-                              onClick={() => setTheme(t)}
-                              className={`p-4 rounded-2xl text-center transition-all cursor-pointer ${
-                                theme === t
-                                  ? 'bg-amber/10 text-amber shadow-lg'
-                                  : 'bg-pebble/20 text-slate hover:bg-pebble/30'
-                              }`}
-                            >
-                              <div className={`w-10 h-10 rounded-xl mx-auto mb-2 ${
-                                t === 'light' ? 'bg-white' : t === 'dark' ? 'bg-ink border border-white/20' : 'bg-gradient-to-br from-white to-ink'
-                              }`} />
-                              <span className="text-sm font-medium capitalize">{t}</span>
-                            </button>
+                      <div className="grid grid-cols-2 gap-3">
+                        {(['light', 'dark'] as const).map(t => (
+                          <button
+                            key={t}
+                            onClick={() => {
+                              setTheme(t);
+                              document.documentElement.setAttribute('data-theme', t);
+                              localStorage.setItem('friendzy-theme', t);
+                            }}
+                            className={`p-4 rounded-2xl text-center transition-all cursor-pointer ${
+                              theme === t
+                                ? 'bg-amber/10 text-amber shadow-lg border-2 border-amber/30'
+                                : 'bg-pebble/20 text-slate hover:bg-pebble/30 border-2 border-transparent'
+                            }`}
+                          >
+                            <div className={`w-10 h-10 rounded-xl mx-auto mb-2 ${
+                              t === 'light' ? 'bg-white border border-pebble' : 'bg-ink border border-white/20'
+                            }`} />
+                            <span className="text-sm font-medium capitalize">{t} Mode</span>
+                          </button>
                         ))}
                       </div>
                     </div>
@@ -419,38 +417,20 @@ export default function Settings() {
                       <label className="block text-sm font-medium text-ink mb-3">Font Size</label>
                       <div className="grid grid-cols-3 gap-3">
                         {(['small', 'medium', 'large'] as const).map(size => (
-                            <button
-                              onClick={() => setFontSize(size)}
-                              className={`p-4 rounded-2xl text-center transition-all cursor-pointer ${
-                                fontSize === size
-                                  ? 'bg-amber/10 text-amber shadow-lg'
-                                  : 'bg-pebble/20 text-slate hover:bg-pebble/30'
-                              }`}
-                            >
-                              <span className={`font-medium ${
-                                size === 'small' ? 'text-xs' : size === 'large' ? 'text-lg' : 'text-sm'
-                              }`}>Aa</span>
-                              <p className="text-xs mt-1 capitalize">{size}</p>
-                            </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-ink mb-3">Color Accent</label>
-                      <div className="flex gap-3">
-                        {[
-                          { color: '#D4A373', name: 'Gold' },
-                          { color: '#6B8C7A', name: 'Sage' },
-                          { color: '#4A6A7A', name: 'Slate' },
-                          { color: '#C85A4C', name: 'Red' },
-                          { color: '#2C3E4E', name: 'Navy' },
-                        ].map(accent => (
-                            <button
-                              className="w-10 h-10 rounded-full cursor-pointer ring-2 ring-offset-2 ring-transparent hover:ring-amber/30 transition-all"
-                              style={{ background: accent.color }}
-                              title={accent.name}
-                            />
+                          <button
+                            key={size}
+                            onClick={() => setFontSize(size)}
+                            className={`p-4 rounded-2xl text-center transition-all cursor-pointer ${
+                              fontSize === size
+                                ? 'bg-amber/10 text-amber shadow-lg border-2 border-amber/30'
+                                : 'bg-pebble/20 text-slate hover:bg-pebble/30 border-2 border-transparent'
+                            }`}
+                          >
+                            <span className={`font-medium ${
+                              size === 'small' ? 'text-xs' : size === 'large' ? 'text-lg' : 'text-sm'
+                            }`}>Aa</span>
+                            <p className="text-xs mt-1 capitalize">{size}</p>
+                          </button>
                         ))}
                       </div>
                     </div>
@@ -458,15 +438,6 @@ export default function Settings() {
                 </div>
               </FadeUp>
             )}
-
-            {/* Save Button */}
-            <FadeUp delay={0.2}>
-              <div className="mt-6 flex justify-end">
-                  <button onClick={handleSave} className="px-6 py-3 rounded-2xl bg-amber text-white text-sm font-semibold hover:bg-amber-light transition-colors cursor-pointer">
-                    Save Changes
-                  </button>
-              </div>
-            </FadeUp>
           </div>
         </div>
       </div>

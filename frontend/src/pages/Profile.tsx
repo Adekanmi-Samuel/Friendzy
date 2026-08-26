@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Edit3, Camera, MapPin, Calendar, Heart, Shield, Plus, X } from 'lucide-react';
 import Navbar from '../components/Navbar';
@@ -6,66 +6,39 @@ import ConnectionArcs from '../components/ConnectionArcs';
 import SafeSpaceBadge from '../components/SafeSpaceBadge';
 import MoodIndicator from '../components/MoodIndicator';
 import { FadeUp } from '../lib/animate';
-
-const profileData = {
-  name: 'Alex',
-  age: 27,
-  location: 'San Francisco, CA',
-  bio: 'Creative thinker who loves connecting with people over shared interests. I believe every conversation is a chance to learn something new. Passionate about art, technology, and making the world a little less lonely.',
-  joinDate: 'March 2025',
-  mood: 'good' as 'great' | 'good' | 'okay' | 'low',
-  interests: ['Photography', 'Hiking', 'Art', 'Music', 'Cooking', 'Travel', 'Reading', 'Yoga'],
-  traits: ['Empathetic', 'Creative', 'Listener', 'Adventurous'],
-  lookingFor: ['Deep connections', 'Activity partners', 'Study buddies'],
-  stats: { friends: 23, chats: 156, daysActive: 142 },
-  badges: [
-    { name: 'Early Adopter', color: 'bg-amber/10 text-amber' },
-    { name: 'Safe Space Champion', color: 'bg-moss/10 text-moss' },
-    { name: 'Conversation Starter', color: 'bg-slate/10 text-slate' },
-    { name: 'Globe Trotter', color: 'bg-ink/10 text-ink' },
-  ],
-};
-
-const recentFriends = [
-  { name: 'Amara', compatibility: 94, status: 'Connected' },
-  { name: 'Marcus', compatibility: 82, status: 'Connected' },
-  { name: 'Priya', compatibility: 87, status: 'Connected' },
-  { name: 'Yuki', compatibility: 91, status: 'New' },
-  { name: 'Chen', compatibility: 78, status: 'Connected' },
-];
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Profile() {
+  const { user, updateProfile } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
-  const [profile, setProfile] = useState<typeof profileData>(() => {
-    const saved = localStorage.getItem('friendzy_profile');
-    return saved ? JSON.parse(saved) : profileData;
-  });
-
-  const [bio, setBio] = useState(profile.bio);
-  const [mood, setMood] = useState<'great' | 'good' | 'okay' | 'low'>(profile.mood);
+  const [bio, setBio] = useState(user?.bio || '');
+  const [mood, setMood] = useState<'great' | 'good' | 'okay' | 'low'>('good');
+  const [interests, setInterests] = useState<string[]>(user?.interests || []);
   const [newInterest, setNewInterest] = useState('');
-  const [interests, setInterests] = useState(profile.interests);
 
-  useEffect(() => {
-    localStorage.setItem('friendzy_profile', JSON.stringify(profile));
-  }, [profile]);
+  const displayName = user?.name || 'Friend';
+  const joinDate = user?.joinDate || new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
-  const toggleEdit = () => {
+  const toggleEdit = async () => {
     if (isEditing) {
-      setProfile((prev: typeof profile) => ({ ...prev, bio, mood, interests }));
+      try {
+        await updateProfile({ bio, interests });
+      } catch (err) {
+        console.error('Failed to update profile:', err);
+      }
     }
     setIsEditing(!isEditing);
   };
 
   const addInterest = () => {
     if (newInterest.trim() && !interests.includes(newInterest.trim())) {
-      setInterests((prev: string[]) => [...prev, newInterest.trim()]);
+      setInterests(prev => [...prev, newInterest.trim()]);
       setNewInterest('');
     }
   };
 
   const removeInterest = (interest: string) => {
-    setInterests((prev: string[]) => prev.filter((i: string) => i !== interest));
+    setInterests(prev => prev.filter(i => i !== interest));
   };
 
   return (
@@ -86,7 +59,7 @@ export default function Profile() {
               <div className="flex flex-col md:flex-row md:items-end gap-4 -mt-12 md:-mt-16">
                 <div className="relative">
                   <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-amber/10 flex items-center justify-center text-amber text-3xl md:text-4xl font-bold border-4 border-white" style={{ fontFamily: 'var(--font-display)' }}>
-                    {profileData.name[0]}
+                    {displayName[0]}
                   </div>
                   <button className="absolute bottom-1 right-1 w-8 h-8 rounded-full bg-amber text-white flex items-center justify-center hover:bg-amber-light transition-colors cursor-pointer">
                     <Camera size={14} />
@@ -96,13 +69,13 @@ export default function Profile() {
                 <div className="flex-1 md:pb-1">
                   <div className="flex items-center gap-3 mb-1">
                     <h1 className="text-2xl md:text-3xl font-bold text-ink" style={{ fontFamily: 'var(--font-display)' }}>
-                      {profileData.name}, {profileData.age}
+                      {displayName}
                     </h1>
                     <SafeSpaceBadge size="md" />
                   </div>
                   <div className="flex flex-wrap items-center gap-4 text-sm text-slate">
-                    <span className="flex items-center gap-1"><MapPin size={14} /> {profileData.location}</span>
-                    <span className="flex items-center gap-1"><Calendar size={14} /> Joined {profileData.joinDate}</span>
+                    <span className="flex items-center gap-1"><MapPin size={14} /> {user?.location || 'Earth'}</span>
+                    <span className="flex items-center gap-1"><Calendar size={14} /> Joined {joinDate}</span>
                   </div>
                 </div>
 
@@ -110,9 +83,6 @@ export default function Profile() {
                   <button onClick={toggleEdit}
                     className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber text-white text-sm font-medium hover:bg-amber-light transition-colors cursor-pointer">
                     <Edit3 size={14} /> {isEditing ? 'Save' : 'Edit Profile'}
-                  </button>
-                  <button className="p-2 rounded-xl bg-white border border-pebble text-slate hover:text-ink transition-colors cursor-pointer">
-                    <Heart size={16} />
                   </button>
                 </div>
               </div>
@@ -131,7 +101,7 @@ export default function Profile() {
                   <textarea value={bio} onChange={e => setBio(e.target.value)} rows={4}
                     className="w-full px-4 py-3 rounded-2xl bg-linen text-sm text-ink placeholder:text-slate/50 focus:outline-none focus:ring-2 focus:ring-amber/30 resize-none" />
                 ) : (
-                  <p className="text-slate leading-relaxed">{bio}</p>
+                  <p className="text-slate leading-relaxed">{bio || 'Tell people about yourself...'}</p>
                 )}
               </div>
             </FadeUp>
@@ -178,7 +148,11 @@ export default function Profile() {
               <div className="rounded-3xl p-6 bg-white border border-pebble">
                 <h2 className="text-lg font-semibold text-ink mb-4" style={{ fontFamily: 'var(--font-display)' }}>My Friends</h2>
                 <div className="space-y-3">
-                  {recentFriends.map(friend => (
+                  {[
+                    { name: 'Amara', compatibility: 94, status: 'Connected' },
+                    { name: 'Marcus', compatibility: 82, status: 'Connected' },
+                    { name: 'Priya', compatibility: 87, status: 'Connected' },
+                  ].map(friend => (
                     <div key={friend.name} className="flex items-center gap-3 p-3 rounded-2xl hover:bg-pebble/20 transition-colors">
                       <div className="w-10 h-10 rounded-full bg-amber/10 flex items-center justify-center text-amber font-semibold text-sm">
                         {friend.name[0]}
@@ -203,9 +177,9 @@ export default function Profile() {
                 <h2 className="text-lg font-semibold text-ink mb-4" style={{ fontFamily: 'var(--font-display)' }}>Your Journey</h2>
                 <div className="grid grid-cols-3 gap-4">
                   {[
-                    { value: profileData.stats.friends, label: 'Friends' },
-                    { value: profileData.stats.chats, label: 'Messages' },
-                    { value: profileData.stats.daysActive, label: 'Days' },
+                    { value: 3, label: 'Friends' },
+                    { value: 24, label: 'Messages' },
+                    { value: 1, label: 'Days' },
                   ].map(stat => (
                     <div key={stat.label} className="text-center">
                       <p className="text-2xl font-bold text-ink" style={{ fontFamily: 'var(--font-mono)' }}>{stat.value}</p>
@@ -216,43 +190,15 @@ export default function Profile() {
               </div>
             </FadeUp>
 
-            {/* Traits */}
-            <FadeUp delay={0.15}>
-              <div className="rounded-3xl p-6 bg-white border border-pebble">
-                <h2 className="text-lg font-semibold text-ink mb-4" style={{ fontFamily: 'var(--font-display)' }}>Personality Traits</h2>
-                <div className="flex flex-wrap gap-2">
-                  {profileData.traits.map(trait => (
-                    <span key={trait} className="px-3 py-1.5 rounded-full bg-ink/10 text-ink text-sm font-medium">
-                      {trait}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </FadeUp>
-
             {/* Looking For */}
             <FadeUp delay={0.2}>
               <div className="rounded-3xl p-6 bg-white border border-pebble">
                 <h2 className="text-lg font-semibold text-ink mb-4" style={{ fontFamily: 'var(--font-display)' }}>Looking For</h2>
                 <div className="space-y-2">
-                  {profileData.lookingFor.map(item => (
+                  {(user?.lookingFor || ['Deep connections', 'Activity partners']).map(item => (
                     <div key={item} className="flex items-center gap-2">
                       <Heart size={14} className="text-amber" />
                       <span className="text-sm text-slate">{item}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </FadeUp>
-
-            {/* Badges */}
-            <FadeUp delay={0.25}>
-              <div className="rounded-3xl p-6 bg-white border border-pebble">
-                <h2 className="text-lg font-semibold text-ink mb-4" style={{ fontFamily: 'var(--font-display)' }}>Badges</h2>
-                <div className="grid grid-cols-2 gap-2">
-                  {profileData.badges.map(badge => (
-                    <div key={badge.name} className={`px-3 py-2 rounded-xl text-xs font-medium text-center ${badge.color}`}>
-                      {badge.name}
                     </div>
                   ))}
                 </div>
@@ -268,12 +214,12 @@ export default function Profile() {
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-slate">Profile Verified</span>
-                    <span className="text-xs font-medium text-moss bg-moss/10 px-2 py-0.5 rounded-full">Verified</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-slate">Two-Factor Authentication</span>
-                    <span className="text-xs font-medium text-moss bg-moss/10 px-2 py-0.5 rounded-full">Active</span>
+                    <span className="text-sm text-slate">Email Verified</span>
+                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                      user?.email ? 'text-moss bg-moss/10' : 'text-brick bg-brick/10'
+                    }`}>
+                      {user?.email ? 'Verified' : 'Pending'}
+                    </span>
                   </div>
                 </div>
                 <Link to="/safety" className="block mt-4 text-sm text-amber hover:text-amber-light transition-colors">

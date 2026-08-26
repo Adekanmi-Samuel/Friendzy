@@ -10,9 +10,14 @@ interface User {
   location?: string;
   bio?: string;
   interests?: string[];
+  traits?: string[];
+  lookingFor?: string[];
   verified?: boolean;
   premium?: boolean;
   trustScore?: number;
+  stats?: { friends: number; chats: number; daysActive: number };
+  badges?: Array<{ name: string; color: string }>;
+  joinDate?: string;
 }
 
 interface AuthContextType {
@@ -25,6 +30,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   updatePassword: (newPassword: string) => Promise<void>;
+  updateProfile: (data: Partial<User>) => Promise<void>;
   isAuthenticated: boolean;
 }
 
@@ -38,6 +44,7 @@ const AuthContext = createContext<AuthContextType>({
   logout: async () => {},
   resetPassword: async () => {},
   updatePassword: async () => {},
+  updateProfile: async () => {},
   isAuthenticated: false,
 });
 
@@ -55,9 +62,14 @@ function supabaseUserToUser(supabaseUser: SupabaseUser): User {
     location: meta.location,
     bio: meta.bio,
     interests: meta.interests,
+    traits: meta.traits,
+    lookingFor: meta.lookingFor,
     verified: meta.verified ?? false,
     premium: meta.premium ?? false,
     trustScore: meta.trustScore ?? 0,
+    stats: meta.stats ?? { friends: 0, chats: 0, daysActive: 0 },
+    badges: meta.badges ?? [],
+    joinDate: meta.joinDate ?? new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
   };
 }
 
@@ -128,6 +140,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) throw error;
   }, []);
 
+  const updateProfile = useCallback(async (data: Partial<User>) => {
+    const { data: { user: currentUser } } = await supabase.auth.getUser();
+    if (!currentUser) throw new Error('Not authenticated');
+
+    const { error } = await supabase.auth.updateUser({
+      data: {
+        ...data,
+        full_name: data.name ?? currentUser.user_metadata?.full_name,
+      },
+    });
+    if (error) throw error;
+
+    // Update local user state immediately
+    const { data: { user: updatedUser } } = await supabase.auth.getUser();
+    if (updatedUser) {
+      setUser(supabaseUserToUser(updatedUser));
+    }
+  }, []);
+
   return (
     <AuthContext.Provider
       value={{
@@ -140,6 +171,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         logout,
         resetPassword,
         updatePassword,
+        updateProfile,
         isAuthenticated: !!session,
       }}
     >
